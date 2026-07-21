@@ -1,0 +1,27 @@
+export const config = {
+  app: {
+    name: 'LIFELINK',
+    tagline: 'When you cannot speak for yourself, your Digital Twin speaks.',
+    url: process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000',
+  },
+  ontomorph: {
+    apiKey: process.env.ONTOMORPH_API_KEY || '',
+    baseUrl: process.env.ONTOMORPH_BASE_URL || 'https://api.ontomorph.com/v1',
+  },
+  holon: {
+    apiKey: process.env.HOLON_API_KEY || '',
+    baseUrl: process.env.HOLON_BASE_URL || 'https://api.holon.ai/v1',
+  },
+  mongodb: {
+    uri: process.env.MONGODB_URI || process.env.DATABASE_URL || '',
+  },
+  jwt: {
+    secret: process.env.JWT_SECRET || 'lifelink-dev-secret-change-in-production',
+    expiresIn: '7d',
+  },
+  encryption: {
+    key: process.env.ENCRYPTION_KEY || '',
+  },
+} as const;
+
+export type Config = typeof config;
