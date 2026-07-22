@@ -46,6 +46,12 @@ export function Nav() {
             ))}
             <div className="flex items-center gap-3">
               <a
+                href="/responder-login"
+                className="text-sm text-muted hover:text-foreground transition-colors duration-200 px-3 py-2"
+              >
+                Responders
+              </a>
+              <a
                 href="/login"
                 className="text-sm text-muted hover:text-foreground transition-colors duration-200 px-3 py-2"
               >
@@ -93,13 +99,22 @@ export function Nav() {
               ))}
               <div className="pt-3 border-t border-border space-y-3">
                 <a
+                  href="/responder-login"
+                  onClick={() => setMobileOpen(false)}
+                  className="block text-sm text-muted hover:text-foreground transition-colors duration-200 py-2"
+                >
+                  Responders
+                </a>
+                <a
                   href="/login"
+                  onClick={() => setMobileOpen(false)}
                   className="block text-sm text-muted hover:text-foreground transition-colors duration-200 py-2"
                 >
                   Sign In
                 </a>
                 <a
                   href="/onboarding"
+                  onClick={() => setMobileOpen(false)}
                   className="block w-full text-center h-10 leading-10 rounded-lg bg-foreground text-sm font-medium text-background"
                 >
                   Get Started

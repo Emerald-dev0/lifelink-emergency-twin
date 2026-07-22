@@ -135,7 +135,16 @@ export default function LoginPage() {
           </a>
         </p>
 
-        <div className="mt-8">
+        <div className="mt-6 pt-6 border-t border-border">
+          <a
+            href="/responder-login"
+            className="flex items-center justify-center gap-2 text-sm text-muted hover:text-foreground transition-colors duration-200"
+          >
+            Emergency responder? Sign in here →
+          </a>
+        </div>
+
+        <div className="mt-6">
           <a href="/" className="text-xs text-muted hover:text-foreground transition-colors duration-200">
             ← Back to home
           </a>
