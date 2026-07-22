@@ -11,11 +11,11 @@ export interface IAccessLog extends Document {
 
 const AccessLogSchema = new Schema<IAccessLog>(
   {
-    grantId: { type: Schema.Types.ObjectId, ref: 'EmergencyGrant', required: true },
-    responderId: { type: String },
+    grantId: { type: Schema.Types.ObjectId, ref: 'EmergencyGrant', required: true, index: true },
+    responderId: { type: String, index: true },
     action: { type: String, enum: ['viewed', 'consented', 'expired', 'revoked'], required: true },
     fieldsAccessed: [{ type: String }],
-    timestamp: { type: Date, default: Date.now },
+    timestamp: { type: Date, default: Date.now, index: true },
   },
   { timestamps: true }
 );
