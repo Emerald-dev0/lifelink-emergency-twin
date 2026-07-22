@@ -1,33 +1,71 @@
 @import "tailwindcss";
 
-:root {
+/* ── Landing theme (default): white-first, strict black & white ── */
+:root,
+.landing-theme {
+  --background: #ffffff;
+  --foreground: #0a0a0a;
+  --muted: #5a5a5a;
+  --muted-foreground: #9a9a9a;
+  --border: #e5e5e5;
+  --surface: #fafafa;
+  --surface-inset: #f5f5f5;
+  --surface-subtle: rgba(0, 0, 0, 0.03);
+  --border-subtle: rgba(0, 0, 0, 0.06);
+  --card-bg: #fafafa;
+  --card-border: #e5e5e5;
+  --card-hover: #f0f0f0;
+  --accent: #0a0a0a;
+  --accent-dim: rgba(10, 10, 10, 0.06);
+  --danger: #0a0a0a;
+  --success: #0a0a0a;
+  --warning: #5a5a5a;
+}
+
+/* ── App theme: dark instrumentation with state accents (onboarding+) ── */
+.app-theme {
   --background: #050505;
-  --foreground: #ffffff;
-  --accent: #00E5FF;
-  --accent-dim: rgba(0, 229, 255, 0.15);
-  --muted: rgba(255, 255, 255, 0.5);
+  --foreground: #f5f5f5;
+  --muted: rgba(245, 245, 245, 0.55);
+  --muted-foreground: rgba(245, 245, 245, 0.35);
+  --border: rgba(255, 255, 255, 0.08);
+  --surface: #0f0f0f;
+  --surface-inset: #161616;
+  --surface-subtle: rgba(255, 255, 255, 0.03);
+  --border-subtle: rgba(255, 255, 255, 0.06);
   --card-bg: rgba(255, 255, 255, 0.03);
   --card-border: rgba(255, 255, 255, 0.06);
   --card-hover: rgba(255, 255, 255, 0.06);
-  --danger: #FF3333;
-  --success: #00FF85;
-  --warning: #FFB800;
+  --accent: #00e5ff;
+  --accent-dim: rgba(0, 229, 255, 0.15);
+  --danger: #ff3333;
+  --success: #00ff85;
+  --warning: #ffb800;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-surface: var(--surface);
+  --color-surface-inset: var(--surface-inset);
+  --color-surface-subtle: var(--surface-subtle);
+  --color-border-subtle: var(--border-subtle);
   --color-accent: var(--accent);
   --color-accent-dim: var(--accent-dim);
-  --color-muted: var(--muted);
   --color-card-bg: var(--card-bg);
   --color-card-border: var(--card-border);
   --color-card-hover: var(--card-hover);
   --color-danger: var(--danger);
   --color-success: var(--success);
   --color-warning: var(--warning);
-  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
-  --font-mono: "JetBrains Mono", "Fira Code", monospace;
+  --font-sans: var(--font-inter), system-ui, -apple-system, sans-serif;
+  --font-mono: var(--font-mono), "JetBrains Mono", "Fira Code", monospace;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
 }
 
 * {
@@ -42,11 +80,20 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-::selection {
+/* Landing: black selection on white */
+.landing-theme ::selection {
+  background: var(--foreground);
+  color: var(--background);
+}
+
+/* App: cyan selection */
+.app-theme ::selection {
   background: var(--accent);
   color: var(--background);
 }
@@ -59,49 +106,53 @@ body {
   background: transparent;
 }
 
-::-webkit-scrollbar-thumb {
+.landing-theme ::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.12);
+  border-radius: 3px;
+}
+
+.landing-theme ::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.app-theme ::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.1);
   border-radius: 3px;
 }
 
-::-webkit-scrollbar-thumb:hover {
+.app-theme ::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.2);
 }
 
+.font-mono {
+  font-family: var(--font-mono);
+}
+
+/* App-only motion keyframes */
 @keyframes pulse-glow {
-  0%, 100% { opacity: 0.4; }
-  50% { opacity: 0.8; }
-}
-
-@keyframes scan-line {
-  0% { top: 0; }
-  100% { top: 100%; }
-}
-
-@keyframes particle-float {
-  0%, 100% { transform: translateY(0) translateX(0); opacity: 0; }
-  25% { opacity: 0.6; }
-  75% { opacity: 0.3; }
-  100% { transform: translateY(-100px) translateX(20px); opacity: 0; }
-}
-
-@keyframes data-flow {
-  0% { stroke-dashoffset: 100; }
-  100% { stroke-dashoffset: 0; }
-}
-
-@keyframes hologram-flicker {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.85; }
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 0.8;
+  }
 }
 
 @keyframes twin-pulse {
-  0%, 100% { box-shadow: 0 0 20px rgba(0, 229, 255, 0.2); }
-  50% { box-shadow: 0 0 40px rgba(0, 229, 255, 0.4); }
+  0%,
+  100% {
+    box-shadow: 0 0 20px rgba(0, 229, 255, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(0, 229, 255, 0.4);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  *, ::before, ::after {
+  *,
+  ::before,
+  ::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
