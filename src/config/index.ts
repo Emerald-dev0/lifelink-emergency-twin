@@ -7,10 +7,9 @@ export const config = {
   ontomorph: {
     apiKey: process.env.ONTOMORPH_API_KEY || '',
     baseUrl: process.env.ONTOMORPH_BASE_URL || 'https://api.ontomorph.com/v1',
-  },
-  holon: {
-    apiKey: process.env.HOLON_API_KEY || '',
-    baseUrl: process.env.HOLON_BASE_URL || 'https://api.holon.ai/v1',
+    holonUrl: process.env.ONTOMORPH_BASE_URL
+      ? `${process.env.ONTOMORPH_BASE_URL.replace(/\/v1.*$/, '')}/holon/v1`
+      : 'https://holon-api.ontomorph.com',
   },
   mongodb: {
     uri: process.env.MONGODB_URI || process.env.DATABASE_URL || '',
