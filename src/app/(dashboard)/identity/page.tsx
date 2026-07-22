@@ -1,14 +1,16 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { QRCodeSVG } from 'qrcode.react';
-import { HeartPulse, Download, Share2, Shield, AlertTriangle, Droplets, Pill, Clock, ChevronLeft } from 'lucide-react';
+import { HeartPulse, Download, Share2, Shield, AlertTriangle, Droplets, Pill, Clock } from 'lucide-react';
 import { getStoredUser, getAuthHeaders } from '@/lib/auth';
+import { PageLoader } from '@/components/ui/loader';
 
 export default function IdentityPage() {
   const router = useRouter();
+  const qrRef = useRef<HTMLDivElement>(null);
   const [identity, setIdentity] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
@@ -30,32 +32,45 @@ export default function IdentityPage() {
     }
   };
 
+  const handleDownload = () => {
+    const svg = qrRef.current?.querySelector('svg');
+    if (!svg) return;
+    const xml = new XMLSerializer().serializeToString(svg);
+    const blob = new Blob([xml], { type: 'image/svg+xml' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'lifelink-emergency-id.svg';
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleShare = async () => {
+    if (!navigator.share) return;
+    try {
+      await navigator.share({
+        title: 'LIFELINK Emergency Identity',
+        text: `Emergency Identity: ${identity?.identifier || 'Unknown'}`,
+        url: window.location.href,
+      });
+    } catch {
+      /* user cancelled */
+    }
+  };
+
   if (loading) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="w-8 h-8 rounded-full border-2 border-accent/30 border-t-accent animate-spin" />
-      </div>
-    );
+    return <PageLoader />;
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="mx-auto max-w-lg px-4 py-8">
-        <button
-          onClick={() => router.push('/dashboard')}
-          className="flex items-center gap-1.5 text-sm text-muted hover:text-foreground transition-colors mb-6"
-        >
-          <ChevronLeft className="w-4 h-4" /> Dashboard
-        </button>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-        >
-          <h1 className="text-2xl font-bold mb-2">Emergency Identity</h1>
-          <p className="text-sm text-muted mb-6">
-            Your emergency ID card. Responders can scan the QR code to access your critical medical information.
-          </p>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+    >
+      <h1 className="text-2xl font-bold mb-2">Emergency Identity</h1>
+      <p className="text-sm text-muted mb-6">
+        Your emergency ID card. Responders can scan the QR code to access your critical medical information.
+      </p>
 
           {/* Emergency Card */}
           <div className="rounded-2xl border border-accent/20 bg-gradient-to-b from-accent/5 to-transparent p-6 mb-6">
@@ -71,8 +86,8 @@ export default function IdentityPage() {
             </div>
 
             {/* QR Code */}
-            <div className="flex justify-center mb-6">
-              <div className="p-4 bg-white rounded-2xl">
+            <div className="flex justify-center mb-6" ref={qrRef}>
+              <div className="p-4 bg-surface rounded-2xl">
                 {identity?.identifier ? (
                   <QRCodeSVG
                     value={JSON.stringify({ id: identity.identifier, type: 'lifelink_emergency' })}
@@ -81,7 +96,7 @@ export default function IdentityPage() {
                     fgColor="#050505"
                   />
                 ) : (
-                  <div className="w-[180px] h-[180px] bg-white/5 rounded-xl flex items-center justify-center">
+                  <div className="w-[180px] h-[180px] bg-surface-subtle rounded-xl flex items-center justify-center">
                     <p className="text-xs text-muted">No ID</p>
                   </div>
                 )}
@@ -95,7 +110,7 @@ export default function IdentityPage() {
             {/* Medical Info */}
             <div className="space-y-2">
               {identity?.bloodType && (
-                <div className="flex items-center justify-between p-2.5 rounded-lg bg-white/[0.03]">
+                  <div className="flex items-center justify-between p-2.5 rounded-lg bg-surface-subtle">
                   <div className="flex items-center gap-2">
                     <Droplets className="w-4 h-4 text-danger" />
                     <span className="text-sm text-muted">Blood Type</span>
@@ -105,7 +120,7 @@ export default function IdentityPage() {
               )}
 
               {identity?.allergies?.length > 0 && (
-                <div className="p-2.5 rounded-lg bg-white/[0.03]">
+                <div className="p-2.5 rounded-lg bg-surface-subtle">
                   <div className="flex items-center gap-2 mb-1.5">
                     <AlertTriangle className="w-4 h-4 text-warning" />
                     <span className="text-sm text-muted">Allergies</span>
@@ -121,7 +136,7 @@ export default function IdentityPage() {
               )}
 
               {identity?.medications?.length > 0 && (
-                <div className="p-2.5 rounded-lg bg-white/[0.03]">
+                <div className="p-2.5 rounded-lg bg-surface-subtle">
                   <div className="flex items-center gap-2 mb-1.5">
                     <Pill className="w-4 h-4 text-accent" />
                     <span className="text-sm text-muted">Medications</span>
@@ -137,14 +152,14 @@ export default function IdentityPage() {
               )}
 
               {identity?.conditions?.length > 0 && (
-                <div className="p-2.5 rounded-lg bg-white/[0.03]">
+                <div className="p-2.5 rounded-lg bg-surface-subtle">
                   <div className="flex items-center gap-2 mb-1.5">
                     <Shield className="w-4 h-4 text-accent" />
                     <span className="text-sm text-muted">Conditions</span>
                   </div>
                   <div className="flex flex-wrap gap-1.5">
                     {identity.conditions.map((c: string) => (
-                      <span key={c} className="px-2 py-0.5 rounded-full bg-white/5 border border-white/10 text-xs text-muted">
+                      <span key={c} className="px-2 py-0.5 rounded-full bg-surface-subtle border border-border-subtle text-xs text-muted">
                         {c}
                       </span>
                     ))}
@@ -163,15 +178,19 @@ export default function IdentityPage() {
 
           {/* Actions */}
           <div className="flex gap-3">
-            <button className="flex-1 h-10 rounded-xl border border-white/10 text-foreground hover:bg-white/5 transition-all flex items-center justify-center gap-2 text-sm">
+            <button
+              onClick={handleDownload}
+              className="flex-1 h-10 rounded-xl border border-border-subtle text-foreground hover:bg-surface-subtle transition-all flex items-center justify-center gap-2 text-sm"
+            >
               <Download className="w-4 h-4" /> Download
             </button>
-            <button className="flex-1 h-10 rounded-xl border border-white/10 text-foreground hover:bg-white/5 transition-all flex items-center justify-center gap-2 text-sm">
+            <button
+              onClick={handleShare}
+              className="flex-1 h-10 rounded-xl border border-border-subtle text-foreground hover:bg-surface-subtle transition-all flex items-center justify-center gap-2 text-sm"
+            >
               <Share2 className="w-4 h-4" /> Share
             </button>
           </div>
         </motion.div>
-      </div>
-    </div>
-  );
-}
+    );
+  }
