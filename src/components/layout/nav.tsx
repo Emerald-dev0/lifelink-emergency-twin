@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
-import { config } from '@/config';
+import { Logo } from '@/components/ui/logo';
 
 const navLinks = [
   { label: 'How it Works', href: '#how-it-works' },
@@ -24,27 +24,22 @@ export function Nav() {
   return (
     <nav
       className={cn(
-        'fixed top-0 left-0 right-0 z-50 transition-all duration-500',
+        'fixed top-0 left-0 right-0 z-50 transition-all duration-200',
         scrolled
-          ? 'bg-background/80 backdrop-blur-xl border-b border-white/5'
+          ? 'bg-background/95 backdrop-blur-sm border-b border-border'
           : 'bg-transparent'
       )}
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
-          <a href="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-accent/20 border border-accent/30 flex items-center justify-center">
-              <span className="text-accent text-sm font-bold">L</span>
-            </div>
-            <span className="text-lg font-semibold tracking-tight">{config.app.name}</span>
-          </a>
+          <Logo />
 
           <div className="hidden md:flex items-center gap-8">
             {navLinks.map((link) => (
               <a
                 key={link.href}
                 href={link.href}
-                className="text-sm text-muted hover:text-foreground transition-colors"
+                className="text-sm text-muted hover:text-foreground transition-colors duration-200"
               >
                 {link.label}
               </a>
@@ -52,13 +47,13 @@ export function Nav() {
             <div className="flex items-center gap-3">
               <a
                 href="/login"
-                className="text-sm text-muted hover:text-foreground transition-colors px-3 py-2"
+                className="text-sm text-muted hover:text-foreground transition-colors duration-200 px-3 py-2"
               >
                 Sign In
               </a>
               <a
                 href="/onboarding"
-                className="inline-flex h-9 items-center justify-center rounded-xl bg-accent px-4 text-sm font-medium text-background hover:bg-accent/90 transition-all"
+                className="inline-flex h-9 items-center justify-center rounded-lg bg-foreground px-4 text-sm font-medium text-background hover:opacity-90 transition-opacity duration-200"
               >
                 Get Started
               </a>
@@ -67,7 +62,8 @@ export function Nav() {
 
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
-            className="md:hidden p-2 rounded-lg hover:bg-white/5 transition-colors"
+            className="md:hidden p-2 rounded-md hover:bg-surface transition-colors duration-200"
+            aria-label="Toggle menu"
           >
             <div className="w-5 h-0.5 bg-foreground mb-1" />
             <div className="w-5 h-0.5 bg-foreground mb-1" />
@@ -82,7 +78,7 @@ export function Nav() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="border-t border-white/5 bg-background/95 backdrop-blur-xl md:hidden"
+            className="border-t border-border bg-background md:hidden"
           >
             <div className="px-4 py-4 space-y-3">
               {navLinks.map((link) => (
@@ -90,14 +86,24 @@ export function Nav() {
                   key={link.href}
                   href={link.href}
                   onClick={() => setMobileOpen(false)}
-                  className="block text-sm text-muted hover:text-foreground transition-colors py-2"
+                  className="block text-sm text-muted hover:text-foreground transition-colors duration-200 py-2"
                 >
                   {link.label}
                 </a>
               ))}
-              <div className="pt-3 border-t border-white/5 space-y-3">
-                <a href="/login" className="block text-sm text-muted hover:text-foreground transition-colors py-2">Sign In</a>
-                <a href="/onboarding" className="block w-full text-center h-10 leading-10 rounded-xl bg-accent text-sm font-medium text-background">Get Started</a>
+              <div className="pt-3 border-t border-border space-y-3">
+                <a
+                  href="/login"
+                  className="block text-sm text-muted hover:text-foreground transition-colors duration-200 py-2"
+                >
+                  Sign In
+                </a>
+                <a
+                  href="/onboarding"
+                  className="block w-full text-center h-10 leading-10 rounded-lg bg-foreground text-sm font-medium text-background"
+                >
+                  Get Started
+                </a>
               </div>
             </div>
           </motion.div>
