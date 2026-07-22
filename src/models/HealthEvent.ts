@@ -13,10 +13,10 @@ export interface IHealthEvent extends Document {
 
 const HealthEventSchema = new Schema<IHealthEvent>(
   {
-    userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-    type: { type: String, required: true },
-    title: { type: String, required: true },
-    description: { type: String, required: true },
+    userId: { type: Schema.Types.ObjectId, ref: 'User', required: true, index: true },
+    type: { type: String, required: true, trim: true },
+    title: { type: String, required: true, trim: true, maxlength: 200 },
+    description: { type: String, required: true, trim: true, maxlength: 2000 },
     severity: { type: String, enum: ['info', 'warning', 'critical'], default: 'info' },
     metadata: { type: Schema.Types.Mixed },
     timestamp: { type: Date, required: true },
