@@ -8,13 +8,13 @@ interface HolonQuery {
 export async function queryHolon<T = Record<string, unknown>>(
   query: HolonQuery
 ): Promise<T> {
-  const url = `${config.holon.baseUrl}/query`;
+  const url = `${config.ontomorph.holonUrl}/query`;
 
   const response = await fetch(url, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${config.holon.apiKey}`,
+      'Authorization': `Bearer ${config.ontomorph.apiKey}`,
     },
     body: JSON.stringify(query),
   });
