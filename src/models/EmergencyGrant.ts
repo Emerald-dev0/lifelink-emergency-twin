@@ -14,10 +14,10 @@ export interface IEmergencyGrant extends Document {
 
 const EmergencyGrantSchema = new Schema<IEmergencyGrant>(
   {
-    emergencyId: { type: Schema.Types.ObjectId, ref: 'EmergencyIdentity', required: true },
-    responderId: { type: String },
-    grantCode: { type: String, required: true, unique: true },
-    status: { type: String, enum: ['active', 'expired', 'revoked'], default: 'active' },
+    emergencyId: { type: Schema.Types.ObjectId, ref: 'EmergencyIdentity', required: true, index: true },
+    responderId: { type: String, index: true },
+    grantCode: { type: String, required: true, unique: true, match: /^GC-[A-Z0-9-]+$/ },
+    status: { type: String, enum: ['active', 'expired', 'revoked'], default: 'active', index: true },
     permissions: [{ type: String }],
     accessedAt: { type: Date },
     expiresAt: { type: Date, required: true },
