@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { config } from "@/config";
+import { PWARegister } from "@/components/pwa-register";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -47,7 +48,8 @@ export const metadata: Metadata = {
     description: config.app.tagline,
   },
   icons: {
-    icon: "/icons/favicon.ico",
+    icon: "/icons/favicon.svg",
+    apple: "/icons/icon-192x192.svg",
   },
   manifest: "/manifest.json",
 };
@@ -55,7 +57,10 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#050505",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#050505" },
+  ],
 };
 
 export default function RootLayout({
@@ -68,8 +73,9 @@ export default function RootLayout({
       lang="en"
       className={`${inter.variable} ${jetbrainsMono.variable} h-full`}
     >
-      <body className="min-h-full bg-background text-foreground font-sans antialiased">
+      <body className="landing-theme min-h-full bg-background text-foreground font-sans antialiased">
         {children}
+        <PWARegister />
       </body>
     </html>
   );
