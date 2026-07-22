@@ -231,8 +231,4 @@ MIT — free for hackathon, commercial, or educational use.
 
 ## Team
 
-Built for **[Hackathon Name]** by **[Your Team Name]**.
-
-- **Repo**: `https://github.com/<org>/lifelink-emergency-twin`
-- **Demo**: `https://lifelink-demo.vercel.app`
-- **Contact**: `team@lifelink.dev`
+Built by **[Your Team Name]**.
