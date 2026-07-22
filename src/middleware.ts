@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-const protectedRoutes = ['/dashboard', '/twin', '/identity', '/access', '/timeline'];
-const authRoutes = ['/login', '/onboarding'];
+const protectedRoutes = ['/dashboard', '/twin', '/identity', '/access', '/timeline', '/responder'];
+const authRoutes = ['/login', '/responder-login', '/onboarding', '/responder-register'];
 
-export function proxy(request: NextRequest) {
+export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const token = request.cookies.get('lifelink_token')?.value;
 
@@ -26,12 +26,16 @@ export function proxy(request: NextRequest) {
   response.headers.set('X-Frame-Options', 'DENY');
   response.headers.set('X-Content-Type-Options', 'nosniff');
   response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+  response.headers.set(
+    'Permissions-Policy',
+    'camera=(), microphone=(), geolocation=(), interest-cohort=()',
+  );
 
   return response;
 }
 
 export const config = {
   matcher: [
-    '/((?!api|_next/static|_next/image|icons|favicon.ico|manifest.json|sw.js|workbox-*).*)',
+    '/((?!api|_next/static|_next/image|icons|favicon.ico|manifest.json|sw.js).*)',
   ],
 };
