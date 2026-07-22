@@ -14,8 +14,8 @@ export interface IUser extends Document {
 
 const UserSchema = new Schema<IUser>(
   {
-    email: { type: String, required: true, unique: true, lowercase: true, trim: true },
-    name: { type: String, required: true, trim: true },
+    email: { type: String, required: true, unique: true, lowercase: true, trim: true, match: /^[^\s@]+@[^\s@]+\.[^\s@]+$/ },
+    name: { type: String, required: true, trim: true, minlength: 1, maxlength: 100 },
     passwordHash: { type: String, required: true },
     twinId: { type: String },
     twinStatus: { type: String, enum: ['pending', 'connected', 'disconnected', 'error'], default: 'pending' },
