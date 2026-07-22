@@ -17,17 +17,17 @@ export interface IEmergencyIdentity extends Document {
 
 const EmergencyIdentitySchema = new Schema<IEmergencyIdentity>(
   {
-    userId: { type: Schema.Types.ObjectId, ref: 'User', required: true, unique: true },
-    identifier: { type: String, required: true, unique: true },
+    userId: { type: Schema.Types.ObjectId, ref: 'User', required: true, unique: true, index: true },
+    identifier: { type: String, required: true, unique: true, match: /^LL-[A-Z0-9-]+$/ },
     bloodType: { type: String, enum: ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'] },
-    allergies: [{ type: String }],
-    medications: [{ type: String }],
-    conditions: [{ type: String }],
+    allergies: [{ type: String, trim: true }],
+    medications: [{ type: String, trim: true }],
+    conditions: [{ type: String, trim: true }],
     emergencyContacts: [{
-      name: { type: String, required: true },
-      relationship: { type: String, required: true },
+      name: { type: String, required: true, trim: true },
+      relationship: { type: String, required: true, trim: true },
       phone: { type: String, required: true },
-      email: { type: String },
+      email: { type: String, match: /^[^\s@]+@[^\s@]+\.[^\s@]+$/ },
     }],
     permissions: [{ type: String }],
     isActive: { type: Boolean, default: true },
