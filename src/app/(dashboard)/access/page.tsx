@@ -6,6 +6,8 @@ import { motion } from 'framer-motion';
 import { Shield, ChevronLeft, Eye, Check, X, Clock } from 'lucide-react';
 import { getStoredUser, getAuthHeaders } from '@/lib/auth';
 import { timeAgo } from '@/lib/utils';
+import { EmptyState } from '@/components/ui/empty-state';
+import { PageLoader } from '@/components/ui/loader';
 
 export default function AccessPage() {
   const router = useRouter();
@@ -51,15 +53,13 @@ export default function AccessPage() {
           <p className="text-sm text-muted mb-8">Review who has accessed your emergency identity and when.</p>
 
           {loading ? (
-            <div className="flex justify-center py-16">
-              <div className="w-8 h-8 rounded-full border-2 border-accent/30 border-t-accent animate-spin" />
-            </div>
+            <PageLoader />
           ) : grants.length === 0 ? (
-            <div className="text-center py-16">
-              <Shield className="w-12 h-12 text-muted/30 mx-auto mb-4" />
-              <h3 className="text-lg font-medium mb-1">No access records</h3>
-              <p className="text-sm text-muted">Emergency access grants will appear here.</p>
-            </div>
+            <EmptyState
+              icon={<Shield className="w-12 h-12" />}
+              title="No access records"
+              description="Emergency access grants will appear here."
+            />
           ) : (
             <div className="space-y-2">
               {grants.map((grant, i) => (
@@ -68,13 +68,13 @@ export default function AccessPage() {
                   initial={{ opacity: 0, y: 5 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.03 }}
-                  className="flex items-center justify-between p-4 rounded-xl border border-white/5 bg-white/[0.02]"
+                  className="flex items-center justify-between p-4 rounded-xl border border-border-subtle bg-surface-subtle"
                 >
                   <div className="flex items-center gap-3">
                     <div className={`w-8 h-8 rounded-lg border flex items-center justify-center ${
                       grant.status === 'active' ? 'border-success/20 bg-success/10' :
                       grant.status === 'revoked' ? 'border-danger/20 bg-danger/10' :
-                      'border-white/10 bg-white/[0.03]'
+                      'border-border-subtle bg-surface-subtle'
                     }`}>
                       {statusIcon(grant.status)}
                     </div>

@@ -6,6 +6,8 @@ import { motion } from 'framer-motion';
 import { Clock, ChevronLeft, AlertTriangle, Activity, Pill, Shield, HeartPulse } from 'lucide-react';
 import { getStoredUser, getAuthHeaders } from '@/lib/auth';
 import { timeAgo } from '@/lib/utils';
+import { EmptyState } from '@/components/ui/empty-state';
+import { PageLoader } from '@/components/ui/loader';
 
 const eventIcons: Record<string, any> = {
   medication_change: Pill,
@@ -54,18 +56,16 @@ export default function TimelinePage() {
           <p className="text-sm text-muted mb-8">Track health events, changes, and emergency access over time.</p>
 
           {loading ? (
-            <div className="flex justify-center py-16">
-              <div className="w-8 h-8 rounded-full border-2 border-accent/30 border-t-accent animate-spin" />
-            </div>
+            <PageLoader />
           ) : events.length === 0 ? (
-            <div className="text-center py-16">
-              <Clock className="w-12 h-12 text-muted/30 mx-auto mb-4" />
-              <h3 className="text-lg font-medium mb-1">No events yet</h3>
-              <p className="text-sm text-muted">Health events and emergency access will appear here.</p>
-            </div>
+            <EmptyState
+              icon={<Clock className="w-12 h-12" />}
+              title="No events yet"
+              description="Health events and emergency access will appear here."
+            />
           ) : (
             <div className="relative">
-              <div className="absolute left-[17px] top-0 bottom-0 w-px bg-white/5" />
+              <div className="absolute left-[17px] top-0 bottom-0 w-px bg-border-subtle" />
               <div className="space-y-4">
                 {events.map((event, i) => {
                   const Icon = eventIcons[event.type] || Activity;
@@ -77,7 +77,7 @@ export default function TimelinePage() {
                       transition={{ delay: i * 0.03 }}
                       className="relative flex items-start gap-4"
                     >
-                      <div className="relative z-10 flex-shrink-0 w-9 h-9 rounded-full bg-background border border-white/10 flex items-center justify-center">
+                      <div className="relative z-10 flex-shrink-0 w-9 h-9 rounded-full bg-background border border-border-subtle flex items-center justify-center">
                         <Icon className={`w-4 h-4 ${
                           event.severity === 'critical' ? 'text-danger' :
                           event.severity === 'warning' ? 'text-warning' :
