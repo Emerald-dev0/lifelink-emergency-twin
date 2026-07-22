@@ -7,7 +7,7 @@ import { config } from '@/config';
 
 export async function POST(request: NextRequest) {
   try {
-    const { email, name, password } = await request.json();
+    const { email, name, password, role } = await request.json();
 
     if (!email || !name || !password) {
       return NextResponse.json(
@@ -15,6 +15,8 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
+
+    const validRole = role === 'responder' ? 'responder' : 'patient';
 
     await connectDB();
 
@@ -32,6 +34,7 @@ export async function POST(request: NextRequest) {
       email: email.toLowerCase(),
       name,
       passwordHash,
+      role: validRole,
     });
 
     const token = jwt.sign(
