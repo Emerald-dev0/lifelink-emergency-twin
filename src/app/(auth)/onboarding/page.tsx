@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { HeartPulse, UserPlus, Fingerprint, Shield, QrCode, ArrowRight, Check, ArrowLeft } from 'lucide-react';
+import { setToken, setStoredUser, getAuthHeaders } from '@/lib/auth';
 
 const steps = [
   { id: 'welcome', icon: HeartPulse, title: 'Welcome to LIFELINK' },
@@ -58,6 +59,9 @@ export default function OnboardingPage() {
         return;
       }
 
+      setToken(data.data.token);
+      setStoredUser(data.data.user);
+      document.cookie = `lifelink_token=${data.data.token}; path=/; max-age=604800; SameSite=Lax`;
       setUserId(data.data.user.id);
       setCurrentStep(2);
     } catch {
@@ -69,18 +73,62 @@ export default function OnboardingPage() {
 
   const handleConnectTwin = async () => {
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 2000));
-    setTwinConnected(true);
-    setLoading(false);
-    setCurrentStep(3);
+    try {
+      const res = await fetch('/api/ontomorph/twin', {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({
+          displayName: name || 'My Digital Twin',
+        }),
+      });
+      const data = await res.json();
+      if (!data.success) {
+        setError(data.error || 'Failed to connect Digital Twin');
+        return;
+      }
+      setTwinConnected(true);
+      setCurrentStep(3);
+    } catch {
+      setError('Failed to connect Digital Twin');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleCreateIdentity = async () => {
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 1500));
-    setIdentityCreated(true);
-    setLoading(false);
-    setCurrentStep(4);
+    setError('');
+    try {
+      const token = localStorage.getItem('lifelink_token');
+      const res = await fetch('/api/identity', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          bloodType: 'O+',
+          allergies: [],
+          medications: [],
+          conditions: [],
+          emergencyContacts: [],
+          permissions: selectedPermissions,
+        }),
+      });
+
+      const data = await res.json();
+      if (!data.success) {
+        setError(data.error || 'Failed to create identity');
+        return;
+      }
+
+      setIdentityCreated(true);
+      setCurrentStep(4);
+    } catch {
+      setError('Connection error. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const progress = ((currentStep + 1) / steps.length) * 100;
@@ -98,7 +146,7 @@ export default function OnboardingPage() {
             </span>
             <span className="text-xs text-muted">{Math.round(progress)}%</span>
           </div>
-          <div className="h-1 bg-white/5 rounded-full overflow-hidden">
+          <div className="h-1 bg-surface-subtle rounded-full overflow-hidden">
             <motion.div
               className="h-full bg-accent rounded-full"
               initial={{ width: 0 }}
@@ -122,7 +170,7 @@ export default function OnboardingPage() {
                 className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold transition-all ${
                   i <= currentStep
                     ? 'bg-accent text-background'
-                    : 'bg-white/5 text-muted border border-white/10'
+                    : 'bg-surface-subtle text-muted border border-border-subtle'
                 }`}
               >
                 {i < currentStep ? <Check className="w-4 h-4" /> : step.icon && <step.icon className="w-4 h-4" />}
@@ -180,7 +228,7 @@ export default function OnboardingPage() {
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="John Doe"
-                    className="w-full h-10 px-3.5 rounded-xl bg-white/5 border border-white/10 text-foreground placeholder:text-muted/50 focus:outline-none focus:ring-2 focus:ring-accent/50 transition-all"
+                    className="w-full h-10 px-3.5 rounded-xl bg-surface-subtle border border-border-subtle text-foreground placeholder:text-muted/50 focus:outline-none focus:ring-2 focus:ring-accent/50 transition-all"
                     required
                   />
                 </div>
@@ -191,7 +239,7 @@ export default function OnboardingPage() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="john@example.com"
-                    className="w-full h-10 px-3.5 rounded-xl bg-white/5 border border-white/10 text-foreground placeholder:text-muted/50 focus:outline-none focus:ring-2 focus:ring-accent/50 transition-all"
+                    className="w-full h-10 px-3.5 rounded-xl bg-surface-subtle border border-border-subtle text-foreground placeholder:text-muted/50 focus:outline-none focus:ring-2 focus:ring-accent/50 transition-all"
                     required
                   />
                 </div>
@@ -202,7 +250,7 @@ export default function OnboardingPage() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••"
-                    className="w-full h-10 px-3.5 rounded-xl bg-white/5 border border-white/10 text-foreground placeholder:text-muted/50 focus:outline-none focus:ring-2 focus:ring-accent/50 transition-all"
+                    className="w-full h-10 px-3.5 rounded-xl bg-surface-subtle border border-border-subtle text-foreground placeholder:text-muted/50 focus:outline-none focus:ring-2 focus:ring-accent/50 transition-all"
                     required
                     minLength={6}
                   />
@@ -216,7 +264,7 @@ export default function OnboardingPage() {
                   <button
                     type="button"
                     onClick={() => setCurrentStep(0)}
-                    className="h-10 px-4 rounded-xl border border-white/10 text-muted hover:text-foreground hover:bg-white/5 transition-all flex items-center gap-2"
+                    className="h-10 px-4 rounded-xl border border-border-subtle text-muted hover:text-foreground hover:bg-surface-subtle transition-all flex items-center gap-2"
                   >
                     <ArrowLeft className="w-4 h-4" /> Back
                   </button>
@@ -308,14 +356,14 @@ export default function OnboardingPage() {
                     className={`w-full flex items-center gap-3 p-3 rounded-xl border transition-all text-left ${
                       selectedPermissions.includes(perm.id)
                         ? 'border-accent/30 bg-accent/5'
-                        : 'border-white/5 bg-white/[0.02] hover:bg-white/[0.04]'
+                        : 'border-border-subtle bg-surface-subtle hover:bg-surface-inset'
                     }`}
                   >
                     <div
                       className={`w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all ${
                         selectedPermissions.includes(perm.id)
                           ? 'border-accent bg-accent'
-                          : 'border-white/20'
+                          : 'border-border-subtle'
                       }`}
                     >
                       {selectedPermissions.includes(perm.id) && (
@@ -333,7 +381,7 @@ export default function OnboardingPage() {
               <div className="flex gap-3">
                 <button
                   onClick={() => setCurrentStep(2)}
-                  className="h-10 px-4 rounded-xl border border-white/10 text-muted hover:text-foreground hover:bg-white/5 transition-all flex items-center gap-2"
+                  className="h-10 px-4 rounded-xl border border-border-subtle text-muted hover:text-foreground hover:bg-surface-subtle transition-all flex items-center gap-2"
                 >
                   <ArrowLeft className="w-4 h-4" /> Back
                 </button>
@@ -379,7 +427,7 @@ export default function OnboardingPage() {
                 </button>
                 <button
                   onClick={() => router.push('/identity')}
-                  className="w-full h-12 rounded-xl border border-white/10 text-foreground hover:bg-white/5 transition-all"
+                  className="w-full h-12 rounded-xl border border-border-subtle text-foreground hover:bg-surface-subtle transition-all"
                 >
                   View Emergency Card
                 </button>
