@@ -231,6 +231,30 @@ docker run -p 3000:3000 --env-file .env.local lifelink
 
 ---
 
+## Future Roadmap (Post-Hackathon)
+
+*Not implemented due to hackathon time constraints — designed for v1.1+*
+
+| Feature | Description |
+|---------|-------------|
+| **Native Mobile Apps** | React Native / Expo wrapper with offline-first sync, biometric unlock, push notifications for grant requests |
+| **Apple Health / Google Fit Sync** | Import vitals, workouts, sleep data as health events on the twin |
+| **FHIR / EHR Import** | SMART on FHIR connectors for Epic, Cerner, OpenMRS — auto-populate conditions, meds, labs |
+| **Family/Caregiver Portal** | Delegated access for elderly/pediatric patients with audit trail |
+| **Wearable Integration** | Real-time HR, SpO₂, glucose streaming to twin via BLE/Web Bluetooth |
+| **AI Risk Stratification** | HOLON-powered predictive alerts (sepsis, MI, adverse drug events) on timeline |
+| **Offline-First Responder Mode** | Service-worker cached patient summary for dead-zone EMS scenarios |
+| **Multi-Language Support** | i18n for patient identity card (Spanish, French, Mandarin, Arabic, etc.) |
+| **Audit Dashboard for Admins** | Grant issuance/revocation logs, access heatmaps, compliance reports |
+| **Automated Grant Expiry** | Cron job + webhook to revoke/notify on grant expiry |
+| **End-to-End Encryption** | Client-side encryption of sensitive fields before DB write |
+| **SMS/WhatsApp Fallback** | Identity lookup via short code for feature phones / no-data scenarios |
+| **Blockchain Anchoring** | Merkle root of grant logs anchored to public chain for tamper-evidence |
+| **Test Suite** | Vitest (unit), Playwright (e2e), contract tests for Ontomorph API |
+| **CI/CD Pipeline** | GitHub Actions → typecheck → lint → test → build → deploy preview → production |
+
+---
+
 ## License
 
 MIT — free for hackathon, commercial, or educational use.
