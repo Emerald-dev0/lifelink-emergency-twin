@@ -18,7 +18,7 @@ const Card = forwardRef<HTMLDivElement, CardProps>(
         className={cn(
           'rounded-2xl border border-card-border bg-card-bg backdrop-blur-sm p-6',
           'transition-all duration-300',
-          hover && 'hover:border-white/15 hover:bg-card-hover',
+          hover && 'hover:border-border-subtle hover:bg-card-hover',
           glow && 'animate-twin-pulse',
           className
         )}

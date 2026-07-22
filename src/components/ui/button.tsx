@@ -19,8 +19,8 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       primary:
         'bg-accent text-background hover:bg-accent/90 active:bg-accent/80',
       secondary:
-        'border border-white/10 bg-white/5 text-foreground hover:bg-white/10 active:bg-white/15',
-      ghost: 'text-muted hover:text-foreground hover:bg-white/5',
+        'border border-border-subtle bg-surface-subtle text-foreground hover:bg-surface-inset active:bg-surface-inset',
+      ghost: 'text-muted hover:text-foreground hover:bg-surface-subtle',
       danger:
         'bg-danger/10 text-danger border border-danger/20 hover:bg-danger/20',
     };

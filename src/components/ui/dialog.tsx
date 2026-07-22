@@ -29,7 +29,7 @@ export function Dialog({ open, onClose, children, title }: DialogProps) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            className="absolute inset-0 bg-foreground/60 backdrop-blur-sm"
             onClick={onClose}
           />
           <motion.div
@@ -37,14 +37,14 @@ export function Dialog({ open, onClose, children, title }: DialogProps) {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-            className="relative w-full max-w-lg rounded-2xl border border-white/10 bg-background p-6 shadow-2xl"
+            className="relative w-full max-w-lg rounded-2xl border border-border-subtle bg-background p-6 shadow-2xl"
           >
             {title && (
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-lg font-semibold">{title}</h2>
                 <button
                   onClick={onClose}
-                  className="p-1 rounded-lg hover:bg-white/5 transition-colors"
+                  className="p-1 rounded-lg hover:bg-surface-subtle transition-colors"
                 >
                   <X className="w-5 h-5 text-muted" />
                 </button>
