@@ -6,6 +6,8 @@ import { motion } from 'framer-motion';
 import { HeartPulse, QrCode, Activity, Clock, Shield, ChevronRight, AlertTriangle, Pill, Droplets } from 'lucide-react';
 import { getStoredUser, getAuthHeaders } from '@/lib/auth';
 import type { StoredUser } from '@/lib/auth';
+import { PageLoader } from '@/components/ui/loader';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface DashboardData {
   identity: { identifier: string; bloodType?: string; allergies: string[]; medications: string[]; isActive: boolean } | null;
@@ -24,6 +26,10 @@ export default function DashboardPage() {
     const stored = getStoredUser();
     if (!stored) {
       router.push('/login');
+      return;
+    }
+    if (stored.role === 'responder') {
+      router.push('/responder');
       return;
     }
     setUser(stored);
@@ -62,11 +68,7 @@ export default function DashboardPage() {
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="w-8 h-8 rounded-full border-2 border-accent/30 border-t-accent animate-spin" />
-      </div>
-    );
+    return <PageLoader />;
   }
 
   return (
@@ -105,7 +107,7 @@ export default function DashboardPage() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.05 }}
-              className={`rounded-xl border p-4 ${stat.accent ? 'border-accent/20 bg-accent/5' : 'border-white/5 bg-white/[0.02]'}`}
+              className={`rounded-xl border p-4 ${stat.accent ? 'border-accent/20 bg-accent/5' : 'border-border-subtle bg-surface-subtle'}`}
             >
               <div className="flex items-center justify-between mb-2">
                 <stat.icon className={`w-4 h-4 ${stat.accent ? 'text-accent' : 'text-muted'}`} />
@@ -138,7 +140,7 @@ export default function DashboardPage() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.15 }}
-            className="rounded-xl border border-white/5 bg-white/[0.02] p-5 hover:bg-white/[0.04] transition-all group"
+            className="rounded-xl border border-border-subtle bg-surface-subtle p-5 hover:bg-surface-inset transition-all group"
           >
             <div className="flex items-center justify-between mb-3">
               <HeartPulse className="w-5 h-5 text-muted group-hover:text-accent transition-all" />
@@ -153,7 +155,7 @@ export default function DashboardPage() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="rounded-xl border border-white/5 bg-white/[0.02] p-5 hover:bg-white/[0.04] transition-all group"
+            className="rounded-xl border border-border-subtle bg-surface-subtle p-5 hover:bg-surface-inset transition-all group"
           >
             <div className="flex items-center justify-between mb-3">
               <Activity className="w-5 h-5 text-muted group-hover:text-accent transition-all" />
@@ -168,7 +170,7 @@ export default function DashboardPage() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.25 }}
-            className="rounded-xl border border-white/5 bg-white/[0.02] p-5 hover:bg-white/[0.04] transition-all group"
+            className="rounded-xl border border-border-subtle bg-surface-subtle p-5 hover:bg-surface-inset transition-all group"
           >
             <div className="flex items-center justify-between mb-3">
               <Shield className="w-5 h-5 text-muted group-hover:text-accent transition-all" />
@@ -185,7 +187,7 @@ export default function DashboardPage() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="rounded-xl border border-white/5 bg-white/[0.02] p-5"
+            className="rounded-xl border border-border-subtle bg-surface-subtle p-5"
           >
             <h3 className="font-semibold mb-4">Emergency Information</h3>
             <div className="grid sm:grid-cols-3 gap-4">
