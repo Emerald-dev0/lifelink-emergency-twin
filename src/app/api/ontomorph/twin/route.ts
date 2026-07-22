@@ -42,6 +42,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: true, data: twin }, { status: 201 });
   } catch (error) {
     const msg = error instanceof Error ? error.message : 'Internal server error';
+    console.error('[Ontomorph POST /twin]', error);
     return NextResponse.json({ success: false, error: msg }, { status: 500 });
   }
 }
@@ -63,6 +64,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ success: true, data: twin });
   } catch (error) {
     const msg = error instanceof Error ? error.message : 'Internal server error';
+    console.error('[Ontomorph GET /twin]', error);
     return NextResponse.json({ success: false, error: msg }, { status: 500 });
   }
 }
