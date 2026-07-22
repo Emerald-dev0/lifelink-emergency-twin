@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Scan, Shield, HeartPulse, Check, AlertTriangle, X, Stethoscope } from 'lucide-react';
+import { getHolonSummary } from '@/lib/ontomorph';
 
 export default function ResponderPage() {
   const [scanning, setScanning] = useState(false);
@@ -16,26 +17,57 @@ export default function ResponderPage() {
     setPhase('connecting');
     setScanning(true);
 
-    await new Promise((r) => setTimeout(r, 2000));
+    try {
+      const res = await fetch('/api/responder', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ grantCode: grantCode.toUpperCase() }),
+      });
 
-    setPatientInfo({
-      name: 'Emergency Identity Found',
-      identifier: grantCode,
-      bloodType: 'O+',
-      allergies: ['Penicillin', 'Peanuts'],
-      medications: ['Warfarin', 'Metformin'],
-      conditions: ['Atrial Fibrillation', 'Type 2 Diabetes'],
-      emergencyContacts: [{ name: 'Jane Doe', relationship: 'Spouse', phone: '+234 800 000 0000' }],
-    });
+      const data = await res.json();
 
-    setSummary({
-      summary: 'Patient has Atrial Fibrillation managed with Warfarin and Type 2 Diabetes managed with Metformin. Known allergies to Penicillin and Peanuts.',
-      alerts: ['Warfarin use — monitor INR before any surgical procedure', 'Risk of hypoglycemia — check blood glucose'],
-      recommendations: ['Avoid Penicillin-class antibiotics', 'Monitor cardiac rhythm'],
-    });
+      if (!data.success) {
+        setPhase('error');
+        setScanning(false);
+        return;
+      }
 
-    setPhase('connected');
-    setScanning(false);
+      const p = data.data.patient;
+
+      setPatientInfo({
+        name: 'Emergency Identity Found',
+        identifier: p.identifier,
+        bloodType: p.bloodType,
+        allergies: p.allergies || [],
+        medications: p.medications || [],
+        conditions: p.conditions || [],
+        emergencyContacts: p.emergencyContacts || [{ name: 'Not shared', relationship: '', phone: '' }],
+      });
+
+      const medSummary = p.medications?.length
+        ? `Patient is currently taking ${p.medications.join(', ')}.`
+        : 'No active medications on record.';
+      const allergySummary = p.allergies?.length
+        ? `Known allergies: ${p.allergies.join(', ')}.`
+        : 'No known allergies on record.';
+
+      const holon = await getHolonSummary(p.identifier);
+      setSummary(holon ?? {
+        summary: `${medSummary} ${allergySummary}`,
+        alerts: p.allergies?.length
+          ? [`Known allergic reactions to ${p.allergies.join(', ')} — avoid exposure`]
+          : [],
+        recommendations: p.medications?.length
+          ? [`Review ${p.medications.join(', ')} for potential interactions before treatment`]
+          : ['Standard emergency protocols apply'],
+      });
+
+      setPhase('connected');
+    } catch {
+      setPhase('error');
+    } finally {
+      setScanning(false);
+    }
   };
 
   const reset = () => {
@@ -46,7 +78,7 @@ export default function ResponderPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="min-h-screen bg-background flex flex-col app-theme">
       <div className="absolute inset-0 bg-gradient-to-b from-accent/[0.02] via-transparent to-transparent pointer-events-none" />
 
       <div className="relative z-10 flex-1 flex flex-col max-w-lg mx-auto w-full px-4 py-8">
@@ -82,7 +114,7 @@ export default function ResponderPage() {
                   value={grantCode}
                   onChange={(e) => setGrantCode(e.target.value)}
                   placeholder="Enter emergency code..."
-                  className="w-full h-12 px-4 rounded-xl bg-white/5 border border-white/10 text-foreground text-center text-lg tracking-widest uppercase placeholder:text-muted/30 focus:outline-none focus:ring-2 focus:ring-accent/50"
+                  className="w-full h-12 px-4 rounded-xl bg-surface-subtle border border-border-subtle text-foreground text-center text-lg tracking-widest uppercase placeholder:text-muted/30 focus:outline-none focus:ring-2 focus:ring-accent/50"
                 />
                 <button
                   onClick={handleScan}
@@ -133,7 +165,7 @@ export default function ResponderPage() {
               </div>
 
               {/* Patient Info */}
-              <div className="rounded-xl border border-white/5 bg-white/[0.02] p-4">
+                <div className="rounded-xl border border-border-subtle bg-surface-subtle p-4">
                 <h3 className="text-sm font-semibold mb-3">Patient Information</h3>
                 <div className="space-y-2">
                   <div className="flex justify-between"><span className="text-sm text-muted">Blood Type</span><span className="text-sm font-medium">{patientInfo.bloodType}</span></div>
@@ -172,7 +204,7 @@ export default function ResponderPage() {
 
               {/* HOLON Intelligence Summary */}
               {summary && (
-                <div className="rounded-xl border border-white/5 bg-white/[0.02] p-4">
+              <div className="rounded-xl border border-border-subtle bg-surface-subtle p-4">
                   <h3 className="text-sm font-semibold mb-3">HOLON Emergency Summary</h3>
                   <p className="text-sm text-muted mb-3">{summary.summary}</p>
                   {summary.alerts.length > 0 && (
@@ -202,7 +234,7 @@ export default function ResponderPage() {
 
               <button
                 onClick={reset}
-                className="w-full h-10 rounded-xl border border-white/10 text-foreground hover:bg-white/5 transition-all text-sm"
+                className="w-full h-10 rounded-xl border border-border-subtle text-foreground hover:bg-surface-subtle transition-all text-sm"
               >
                 New Scan
               </button>
