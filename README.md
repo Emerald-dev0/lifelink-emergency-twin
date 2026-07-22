@@ -2,23 +2,85 @@
 
 > **When you cannot speak for yourself, your Digital Twin speaks.**
 
-LIFELINK is a patient-owned emergency health identity platform powered by **Ontomorph Digital Twins**. Patients create a secure emergency profile (blood type, allergies, medications, conditions, emergency contacts) and connect their Ontomorph Digital Twin. In an emergency, first responders scan the patient's QR code to instantly access critical medical data — scoped by patient-defined permissions and gated by time-limited grants.
+---
+
+## The Problem — A Real Scenario
+
+**2:47 AM. A single-car collision on I-95. The driver — a 42-year-old woman — is unconscious when EMS arrives.**
+
+No wallet. No medical ID bracelet. Her phone is locked. The paramedics have **zero information** — not her name, not her blood type, not that she's on warfarin (a blood thinner), not that she has a severe penicillin allergy, not that she has a history of atrial fibrillation.
+
+Every minute they spend guessing is a minute they can't treat her correctly. If they give her penicillin, she could go into anaphylactic shock. If they don't know she's on warfarin, internal bleeding could kill her before they reach the ER.
+
+**This happens every day.** In the U.S. alone, **over 50% of emergency patients arrive unable to communicate** their critical health information. The result: preventable adverse drug events, delayed treatment, and avoidable deaths.
 
 ---
 
-## Features
+## The Solution — LIFELINK
 
-| Area | Highlights |
-|------|------------|
-| **Patient Onboarding** | Multi-step flow: account → connect Digital Twin (Ontomorph DTP) → set permissions → generate emergency identity |
-| **Emergency Identity** | QR-encoded card with blood type, allergies, meds, conditions, contacts; downloadable SVG; Web Share API |
-| **Digital Twin Health** | Body-systems overview (cardiovascular, nervous, respiratory, blood, medication) synced from Ontomorph Twin Core API |
-| **Health Timeline** | Chronological event stream (labs, vitals, meds, alerts, grants) with severity badges |
-| **Access Control** | Patient creates time-limited grants (`cardiovascular:read`, `events:read`, `medications:read`); revocable anytime |
-| **Responder Portal** | Grant-code lookup → patient summary powered by HOLON clinical knowledge API |
-| **PWA** | Installable, offline-capable, service-worker cached, native icons & splash screens |
-| **Theming** | Two design systems: **Landing** (white/black) + **App** (dark/cyan) — zero hardcoded colors, all CSS variables |
-| **Auth** | JWT in HttpOnly cookie + localStorage; role-based routes (`patient`, `responder`, `admin`) |
+LIFELINK gives every patient a **secure, patient-owned emergency identity** backed by an **Ontomorph Digital Twin** — a living, structured model of their health that travels with them.
+
+### How It Works — End to End
+
+**1. Patient Onboarding (once)**
+- Create account → connect **Ontomorph Digital Twin** (via DTP Twin Core API) → set granular permissions (what responders can see) → generate **Emergency Identity** with unique QR code.
+
+**2. Daily Life**
+- The Digital Twin continuously syncs health events (labs, vitals, medication changes, conditions) from connected sources.
+- Patient controls **exactly what responders see** — blood type and allergies? Yes. Psychiatric history? No.
+- Grants are **time-limited, scoped, and revocable** — patient owns the consent.
+
+**3. The Emergency (scan & go)**
+- Paramedic arrives, scans QR code on phone/lock screen/wallet card.
+- If patient pre-approved: instant access to scoped data.
+- If not: paramedic enters grant code → patient gets push notification → approves in seconds.
+- **HOLON clinical knowledge API** enriches raw data with context: drug interactions, reference ranges, risk flags.
+
+**4. Responder Portal**
+- Clean, clinical summary: active medications, allergies, conditions, recent labs, risk flags.
+- Works offline (PWA service worker) for dead-zone EMS scenarios.
+- Every access logged, auditable, patient-notified.
+
+---
+
+## Architecture Overview
+
+```
+┌─────────────────┐     ┌──────────────────┐     ┌─────────────────┐
+│   Patient App   │────▶│  Ontomorph DTP   │◀───▶│   HOLON API     │
+│  (Next.js PWA)  │     │  Twin Core API   │     │  (Clinical KB)  │
+└────────┬────────┘     └────────┬─────────┘     └─────────────────┘
+         │                       │
+         ▼                       ▼
+┌─────────────────┐     ┌──────────────────┐
+│   MongoDB       │     │  Responder       │
+│  (Identity,     │     │  Portal          │
+│   Grants,       │     │  (Grant-code     │
+│   Events)       │     │   lookup)        │
+└─────────────────┘     └──────────────────┘
+```
+
+**Data flow:**
+1. Patient creates identity → stored in MongoDB + Ontomorph Twin
+2. Health events sync to Twin (labs, vitals, meds, conditions)
+3. Patient creates grant → scoped token issued
+4. Responder scans QR / enters code → grant validated → scoped data returned
+5. HOLON enriches: drug interactions, lab reference ranges, clinical risk flags
+
+---
+
+## Key Features
+
+| Feature | What It Does |
+|---------|--------------|
+| **Digital Twin Connection** | One-click link to Ontomorph DTP; twin created via Twin Core API |
+| **Granular Permissions** | Patient chooses exactly which data categories responders see |
+| **Time-Limited Grants** | Scoped tokens (e.g., `cardiovascular:read`, `medications:read`) with expiry |
+| **QR Emergency Card** | Downloadable SVG, Web Share API, works offline |
+| **HOLON Enrichment** | Drug interactions, reference ranges, clinical risk flags on responder view |
+| **PWA / Offline** | Installable, service-worker cached, works in dead zones |
+| **Audit Trail** | Every access logged, patient notified, revocable anytime |
+| **Role-Based Access** | Patient / Responder / Admin — separate portals, separate auth flows |
 
 ---
 
@@ -26,15 +88,17 @@ LIFELINK is a patient-owned emergency health identity platform powered by **Onto
 
 | Layer | Stack |
 |-------|-------|
-| Framework | Next.js 16 (App Router, Turbopack) |
-| Language | TypeScript (strict) |
-| Styling | Tailwind CSS v4, CSS variables, `clsx` |
-| Auth | `jsonwebtoken` + `bcryptjs`, HttpOnly cookies |
-| Database | MongoDB (Mongoose) |
-| Ontomorph | `@ontomorph/dtp-sdk` + direct REST to Twin Core API (`/twins`, `/grants`, `/events/emergency-card`) + HOLON knowledge API |
-| UI | Framer Motion, Lucide icons, `qrcode.react` |
-| PWA | `next-pwa` compatible manifest + custom SW |
-| Lint/Format | ESLint (Next.js), Prettier |
+| **Framework** | Next.js 16 (App Router, Turbopack) |
+| **Language** | TypeScript (strict) |
+| **Styling** | Tailwind CSS v4, CSS variables (zero hardcoded colors) |
+| **Auth** | JWT (HttpOnly cookie) + bcryptjs, role-based routes |
+| **Database** | MongoDB (Mongoose) |
+| **Ontomorph** | `@ontomorph/dtp-sdk` + direct REST to Twin Core + HOLON |
+| **UI** | Framer Motion, Lucide, `qrcode.react` |
+| **PWA** | Custom manifest + service worker |
+| **Validation** | Zod schemas on every API route |
+| **Rate Limiting** | In-memory (auth endpoints) |
+| **Logging** | Structured console logger |
 
 ---
 
@@ -43,49 +107,20 @@ LIFELINK is a patient-owned emergency health identity platform powered by **Onto
 ```
 src/
 ├── app/
-│   ├── (auth)/                 # public auth pages
-│   │   ├── login/
-│   │   ├── onboarding/
-│   │   ├── responder-login/
-│   │   └── responder-register/
-│   ├── (dashboard)/            # patient dashboard (protected)
-│   │   ├── dashboard/
-│   │   ├── identity/
-│   │   ├── twin/
-│   │   ├── timeline/
-│   │   └── access/
-│   ├── responder/              # responder portal (protected)
-│   ├── api/
-│   │   ├── auth/               # register, login, me
-│   │   ├── identity/           # CRUD emergency identity
-│   │   ├── events/             # health event timeline
-│   │   ├── grants/             # grant create/list/validate
-│   │   ├── ontomorph/twin/     # proxy to Ontomorph Twin Core
-│   │   ├── responder/          # grant-code lookup
-│   │   └── health/             # health check
-│   ├── globals.css             # CSS variables for both themes
-│   ├── layout.tsx              # root layout (landing-theme)
-│   └── page.tsx                # landing page
+│   ├── (auth)/                 # login, onboarding, responder-login/register
+│   ├── (dashboard)/            # patient: dashboard, identity, twin, timeline, access
+│   ├── responder/              # responder portal
+│   └── api/                    # auth, identity, events, grants, ontomorph/twin, health
 ├── components/
 │   ├── landing/                # hero, problem, how-it-works, tech, security, CTA
 │   ├── layout/                 # nav, footer, dashboard-nav
-│   ├── ui/                     # button, card, badge, input, skeleton, loader, logo, empty-state
-│   └── pwa-register.tsx
-├── lib/
-│   ├── auth.ts                 # client-side token/user helpers
-│   ├── db.ts                   # Mongoose connection singleton
-│   ├── ontomorph.ts            # server-side Ontomorph REST client
-│   ├── validate.ts             # Zod schemas for API bodies
-│   ├── rate-limit.ts           # in-memory rate limiter
-│   ├── logger.ts               # structured console logger
-│   ├── api-response.ts         # standardised response helpers
-│   ├── security.ts             # email/password/phone/sanitize helpers
-│   └── utils.ts                # cn(), generateId(), formatDate, timeAgo
-├── models/                     # Mongoose models (User, EmergencyIdentity, EmergencyGrant, HealthEvent, AccessLog)
+│   └── ui/                     # button, card, badge, input, skeleton, loader, logo
+├── lib/                        # auth, db, ontomorph, validate, rate-limit, logger, etc.
+├── models/                     # User, EmergencyIdentity, EmergencyGrant, HealthEvent, AccessLog
 ├── hooks/                      # useMediaQuery, useLocalStorage, useOnlineStatus
-├── middleware.ts               # Next.js 16 middleware (cookie auth, route guards, security headers)
-├── config/index.ts             # single config object from env
-└── types/api.ts                # shared TypeScript interfaces
+├── middleware.ts               # cookie auth, route guards, security headers
+├── config/index.ts             # single config from env
+└── types/api.ts                # shared TS interfaces
 ```
 
 ---
@@ -93,72 +128,49 @@ src/
 ## Getting Started
 
 ### Prerequisites
-
-- Node.js **20+** (`.nvmrc` / `.node-version` pinned)
+- Node.js **20+** (`.nvmrc` pinned)
 - MongoDB (local or Atlas)
 - **Ontomorph API keys**:
-  - `ONTOMORPH_API_KEY` — DTP Twin Core key (for `/twins`, `/grants`, `/events`)
-  - `HOLON_API_KEY` (optional, falls back to DTP key) — HOLON clinical knowledge API
+  - `ONTOMORPH_API_KEY` — DTP Twin Core key
+  - `HOLON_API_KEY` (optional, falls back to DTP key)
 
-### Install
+### Install & Run
 
 ```bash
 git clone https://github.com/<your-org>/lifelink-emergency-twin.git
 cd lifelink-emergency-twin
 npm install
-```
 
-### Environment
+# Copy .env.example → .env.local and fill in keys
+cp .env.example .env.local
 
-Copy `.env.example` → `.env.local` and fill:
-
-```env
-# App
-NEXT_PUBLIC_APP_URL=http://localhost:3000
-
-# Ontomorph (single DTP key powers both Twin Core & HOLON)
-ONTOMORPH_API_KEY=dtp_your_key_here
-ONTOMORPH_BASE_URL=https://api.ontomorph.com/v1
-HOLON_API_KEY=holon_your_key_here   # optional; defaults to ONTOMORPH_API_KEY
-
-# MongoDB
-MONGODB_URI=mongodb://localhost:27017/lifelink
-# or Atlas: mongodb+srv://user:pass@cluster.mongodb.net/lifelink
-
-# Auth
-JWT_SECRET=your_32_char_base64_secret
-ENCRYPTION_KEY=your_16_char_hex_key
-```
-
-Generate secrets:
-
-```bash
-# JWT secret (32 bytes base64)
-node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
-
-# Encryption key (16 bytes hex)
-node -e "console.log(require('crypto').randomBytes(16).toString('hex'))"
-```
-
-### Run
-
-```bash
-npm run dev          # Turbopack dev server on http://localhost:3000
+npm run dev          # http://localhost:3000
 npm run build        # production build
-npm start            # production server
 npm run lint         # ESLint
 npm run typecheck    # tsc --noEmit
 ```
 
+### Environment Variables
+
+```env
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+ONTOMORPH_API_KEY=dtp_your_key
+ONTOMORPH_BASE_URL=https://api.ontomorph.com/v1
+HOLON_API_KEY=holon_your_key          # optional
+MONGODB_URI=mongodb://localhost:27017/lifelink
+JWT_SECRET=your_32_byte_hex
+ENCRYPTION_KEY=your_16_byte_hex
+```
+
 ---
 
-## Key API Endpoints
+## API Endpoints
 
 | Method | Path | Auth | Description |
 |--------|------|------|-------------|
 | `POST` | `/api/auth/register` | — | Register patient/responder |
 | `POST` | `/api/auth/login` | — | Login → JWT cookie |
-| `GET`  | `/api/auth/me` | Bearer | Current user profile |
+| `GET` | `/api/auth/me` | Bearer | Current user profile |
 | `GET/POST/PUT` | `/api/identity` | Bearer | Emergency identity CRUD |
 | `GET/POST` | `/api/events` | Bearer | Health event timeline |
 | `GET/POST` | `/api/grants` | Bearer | Grant create/list |
@@ -169,89 +181,45 @@ npm run typecheck    # tsc --noEmit
 
 ---
 
-## Deployment
-
-### Vercel (recommended)
-
-1. Push to GitHub
-2. Import in Vercel → add env vars from `.env.local`
-3. Deploy — automatic HTTPS, edge functions, PWA headers
-
-### Docker
-
-```dockerfile
-# Dockerfile
-FROM node:20-alpine AS base
-WORKDIR /app
-COPY package*.json ./
-RUN npm ci
-COPY . .
-RUN npm run build
-EXPOSE 3000
-CMD ["npm", "start"]
-```
-
-```bash
-docker build -t lifelink .
-docker run -p 3000:3000 --env-file .env.local lifelink
-```
-
----
-
-## PWA Checklist
-
-- ✅ `manifest.json` (name, icons, theme_color, display: standalone)
-- ✅ Service worker (`public/sw.js`) — cache-first for static, network-first for API
-- ✅ `apple-touch-icon`, `favicon.svg`, maskable icons (192/512)
-- ✅ `theme-color` meta tags (light/dark variants)
-- ✅ Offline fallback page
-
----
-
 ## Security
 
 - JWT in **HttpOnly, Secure, SameSite=Lax** cookie + localStorage mirror
 - Bcrypt cost factor **12**
 - Rate limiting on auth endpoints (10 req/min/IP)
-- Helmet-style headers via middleware: `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`, `Permissions-Policy: camera=(), microphone=(), geolocation=()`
+- Security headers via middleware: `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`, `Permissions-Policy: camera=(), microphone=(), geolocation=()`
 - Zod validation on every API body
 - No secrets in client bundle
 
 ---
 
-## Hackathon Judging Highlights
+## PWA
 
-| Criterion | How LIFELINK Delivers |
-|-----------|----------------------|
-| **Real-world problem** | 50% of ER patients can't communicate critical health info |
-| **Technical depth** | Dual-API integration (DTP + HOLON), grant-based consent, Digital Twin sync |
-| **UX polish** | Two design systems, Framer Motion micro-interactions, QR download/share, PWA |
-| **Completeness** | End-to-end: onboarding → twin → identity → grants → responder lookup |
-| **Code quality** | Strict TS, ESLint, modular libs, middleware auth, structured logging |
+- ✅ `manifest.json` (standalone, theme_color, icons)
+- ✅ Service worker (cache-first static, network-first API)
+- ✅ Maskable icons (192/512), `apple-touch-icon`, `favicon.svg`
+- ✅ `theme-color` meta (light/dark)
+- ✅ Offline fallback
 
 ---
 
 ## Future Roadmap (Post-Hackathon)
 
-*Not implemented due to hackathon time constraints — designed for v1.1+*
-
 | Feature | Description |
 |---------|-------------|
-| **Native Mobile Apps** | React Native / Expo wrapper with offline-first sync, biometric unlock, push notifications for grant requests |
-| **Apple Health / Google Fit Sync** | Import vitals, workouts, sleep data as health events on the twin |
-| **FHIR / EHR Import** | SMART on FHIR connectors for Epic, Cerner, OpenMRS — auto-populate conditions, meds, labs |
-| **Family/Caregiver Portal** | Delegated access for elderly/pediatric patients with audit trail |
-| **Wearable Integration** | Real-time HR, SpO₂, glucose streaming to twin via BLE/Web Bluetooth |
-| **AI Risk Stratification** | HOLON-powered predictive alerts (sepsis, MI, adverse drug events) on timeline |
-| **Offline-First Responder Mode** | Service-worker cached patient summary for dead-zone EMS scenarios |
-| **Multi-Language Support** | i18n for patient identity card (Spanish, French, Mandarin, Arabic, etc.) |
-| **Audit Dashboard for Admins** | Grant issuance/revocation logs, access heatmaps, compliance reports |
-| **Automated Grant Expiry** | Cron job + webhook to revoke/notify on grant expiry |
-| **End-to-End Encryption** | Client-side encryption of sensitive fields before DB write |
-| **SMS/WhatsApp Fallback** | Identity lookup via short code for feature phones / no-data scenarios |
-| **Blockchain Anchoring** | Merkle root of grant logs anchored to public chain for tamper-evidence |
-| **Test Suite** | Vitest (unit), Playwright (e2e), contract tests for Ontomorph API |
-| **CI/CD Pipeline** | GitHub Actions → typecheck → lint → test → build → deploy preview → production |
+| **Native Mobile Apps** | React Native / Expo with offline-first sync, biometric unlock |
+| **Apple Health / Google Fit Sync** | Import vitals, workouts, sleep as health events |
+| **FHIR / EHR Import** | SMART on FHIR connectors (Epic, Cerner, OpenMRS) |
+| **Family/Caregiver Portal** | Delegated access for elderly/pediatric patients |
+| **Wearable Integration** | Real-time HR, SpO₂, glucose via BLE/Web Bluetooth |
+| **AI Risk Stratification** | HOLON-powered predictive alerts (sepsis, MI, ADEs) |
+| **Offline-First Responder Mode** | Cached patient summary for dead-zone EMS |
+| **Multi-Language Support** | i18n for identity card (ES, FR, ZH, AR, etc.) |
+| **Automated Grant Expiry** | Cron + webhook for revocation/notification |
+| **End-to-End Encryption** | Client-side encryption of sensitive fields |
+| **SMS/WhatsApp Fallback** | Short-code lookup for feature phones |
+| **Blockchain Anchoring** | Merkle root of grant logs for tamper-evidence |
+| **Test Suite** | Vitest + Playwright + contract tests |
+| **CI/CD Pipeline** | GitHub Actions → typecheck → lint → test → deploy |
 
 ---
 
