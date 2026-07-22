@@ -10,6 +10,7 @@ export const config = {
     holonUrl: process.env.ONTOMORPH_BASE_URL
       ? `${process.env.ONTOMORPH_BASE_URL.replace(/\/v1.*$/, '')}/holon/v1`
       : 'https://holon-api.ontomorph.com',
+    holonApiKey: process.env.HOLON_API_KEY || process.env.ONTOMORPH_API_KEY || '',
   },
   mongodb: {
     uri: process.env.MONGODB_URI || process.env.DATABASE_URL || '',
