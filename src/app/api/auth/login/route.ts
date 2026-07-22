@@ -4,6 +4,9 @@ import jwt from 'jsonwebtoken';
 import { connectDB } from '@/lib/db';
 import { User } from '@/models';
 import { config } from '@/config';
+import { emailSchema } from '@/lib/validate';
+import { authLimiter } from '@/lib/rate-limit';
+import { logger } from '@/lib/logger';
 
 export async function POST(request: NextRequest) {
   try {
@@ -13,6 +16,23 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { success: false, error: 'Email and password are required' },
         { status: 400 }
+      );
+    }
+
+    const emailResult = emailSchema.safeParse(email);
+    if (!emailResult.success) {
+      return NextResponse.json(
+        { success: false, error: 'Invalid email format' },
+        { status: 422 },
+      );
+    }
+
+    const clientIp = request.headers.get('x-forwarded-for') || 'unknown';
+    const rateCheck = authLimiter.check(`login:${clientIp}`);
+    if (!rateCheck.allowed) {
+      return NextResponse.json(
+        { success: false, error: 'Too many attempts. Try again later.' },
+        { status: 429 },
       );
     }
 
@@ -40,6 +60,8 @@ export async function POST(request: NextRequest) {
       { expiresIn: config.jwt.expiresIn }
     );
 
+    logger.info('User logged in', { email, role: user.role });
+
     return NextResponse.json({
       success: true,
       data: {
@@ -55,7 +77,7 @@ export async function POST(request: NextRequest) {
       },
     });
   } catch (error) {
-    console.error('Login error:', error);
+    logger.error('Login error', error);
     return NextResponse.json(
       { success: false, error: 'Internal server error' },
       { status: 500 }

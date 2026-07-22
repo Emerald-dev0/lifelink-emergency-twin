@@ -4,15 +4,30 @@ import jwt from 'jsonwebtoken';
 import { connectDB } from '@/lib/db';
 import { User } from '@/models';
 import { config } from '@/config';
+import { registerSchema } from '@/lib/validate';
+import { authLimiter } from '@/lib/rate-limit';
+import { logger } from '@/lib/logger';
 
 export async function POST(request: NextRequest) {
   try {
-    const { email, name, password, role } = await request.json();
+    const body = await request.json();
 
-    if (!email || !name || !password) {
+    const parsed = registerSchema.safeParse(body);
+    if (!parsed.success) {
       return NextResponse.json(
-        { success: false, error: 'Email, name, and password are required' },
-        { status: 400 }
+        { success: false, error: parsed.error.issues.map((i) => i.message).join('. ') },
+        { status: 422 },
+      );
+    }
+
+    const { email, name, password, role } = parsed.data;
+
+    const clientIp = request.headers.get('x-forwarded-for') || 'unknown';
+    const rateCheck = authLimiter.check(`register:${clientIp}`);
+    if (!rateCheck.allowed) {
+      return NextResponse.json(
+        { success: false, error: 'Too many attempts. Try again later.' },
+        { status: 429 },
       );
     }
 
@@ -24,7 +39,7 @@ export async function POST(request: NextRequest) {
     if (existing) {
       return NextResponse.json(
         { success: false, error: 'An account with this email already exists' },
-        { status: 409 }
+        { status: 409 },
       );
     }
 
@@ -40,8 +55,10 @@ export async function POST(request: NextRequest) {
     const token = jwt.sign(
       { userId: user._id.toString(), email: user.email, role: user.role },
       config.jwt.secret,
-      { expiresIn: config.jwt.expiresIn }
+      { expiresIn: config.jwt.expiresIn },
     );
+
+    logger.info('User registered', { email, role: validRole });
 
     return NextResponse.json(
       {
@@ -57,13 +74,13 @@ export async function POST(request: NextRequest) {
           },
         },
       },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error) {
-    console.error('Registration error:', error);
+    logger.error('Registration error', error);
     return NextResponse.json(
       { success: false, error: 'Internal server error' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
