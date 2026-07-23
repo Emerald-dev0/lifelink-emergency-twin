@@ -13,6 +13,9 @@ import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
 import * as dotenv from 'dotenv';
 import * as path from 'path';
+import dns from 'dns';
+
+dns.setDefaultResultOrder('ipv4first');
 import { fileURLToPath } from 'url';
 
 // Load env vars from .env.local
