@@ -18,7 +18,7 @@ export function middleware(request: NextRequest) {
   }
 
   if (isAuthPage && token) {
-    return NextResponse.redirect(new URL('/dashboard', request.url));
+    return NextResponse.redirect(new URL('/dashboard/dashboard', request.url));
   }
 
   const response = NextResponse.next();
