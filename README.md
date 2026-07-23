@@ -327,6 +327,12 @@ ENCRYPTION_KEY=your_16_byte_hex
 2. Screenshot the QR code → set as phone wallpaper
 3. Or: tap "Download QR" → print on card stock → keep in wallet
 
+**Print physical emergency cards:**
+1. Login → Identity page → tap "Wallet Card" → download SVG → print → cut → keep in wallet
+2. Or: tap "Car Sticker" → download → print → place in car window / glove box
+3. Each QR code is **unique per patient** — encodes their personal emergency URL
+4. Card shows: blood type, allergies, medications, LIFELINK branding, QR code
+
 **Test the unconscious patient flow:**
 1. Phone is locked, QR visible on lock screen
 2. Responder opens `/responder` → scans QR or types LL-ID
