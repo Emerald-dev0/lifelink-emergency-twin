@@ -1,4 +1,4 @@
-const CACHE = 'lifelink-v1';
+const CACHE = 'lifelink-v2';
 const STATIC = [
   '/',
   '/icons/favicon.svg',
