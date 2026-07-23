@@ -11,10 +11,10 @@ import { EmptyState } from '@/components/ui/empty-state';
 
 const bodySystems = [
   { id: 'cardiovascular', name: 'Cardiovascular', icon: HeartPulse, status: 'normal' as const, color: 'text-danger' },
-  { id: 'nervous', name: 'Nervous System', icon: Brain, status: 'normal' as const, color: 'text-accent' },
-  { id: 'respiratory', name: 'Respiratory', icon: Activity, status: 'normal' as const, color: 'text-success' },
+  { id: 'nervous', name: 'Nervous System', icon: Brain, status: 'normal' as const, color: 'text-foreground' },
+  { id: 'respiratory', name: 'Respiratory', icon: Activity, status: 'normal' as const, color: 'text-foreground' },
   { id: 'blood', name: 'Blood & Immunity', icon: Droplets, status: 'normal' as const, color: 'text-danger' },
-  { id: 'medication', name: 'Medication', icon: Pill, status: 'normal' as const, color: 'text-accent' },
+  { id: 'medication', name: 'Medication', icon: Pill, status: 'normal' as const, color: 'text-foreground' },
 ];
 
 const systemDetails: Record<string, { title: string; events: string[] }> = {
@@ -89,9 +89,9 @@ export default function TwinPage() {
       <p className="text-sm text-muted mb-8">Your Ontomorph Digital Twin body systems overview.</p>
 
       {twin && (
-        <div className="rounded-xl border border-accent/20 bg-accent/5 p-4 mb-8 flex items-center gap-4">
-          <div className="w-10 h-10 rounded-xl bg-accent/10 border border-accent/20 flex items-center justify-center shrink-0">
-            <User className="w-5 h-5 text-accent" />
+        <div className="rounded-xl border border-border bg-surface p-4 mb-8 flex items-center gap-4">
+          <div className="w-10 h-10 rounded-xl bg-foreground/5 border border-border flex items-center justify-center shrink-0">
+            <User className="w-5 h-5 text-foreground" />
           </div>
           <div className="text-sm">
             <p className="font-medium">{twin.displayName}</p>
@@ -109,11 +109,11 @@ export default function TwinPage() {
             onClick={() => setSelectedSystem(system.id === selectedSystem ? null : system.id)}
             className={`rounded-xl border p-4 text-center transition-all ${
               selectedSystem === system.id
-                ? 'border-accent/30 bg-accent/5'
-                : 'border-border-subtle bg-surface-subtle hover:bg-surface-inset'
+                ? 'border-foreground/20 bg-foreground/5'
+                : 'border-border bg-surface hover:bg-surface-inset'
             }`}
           >
-            <div className="w-10 h-10 mx-auto rounded-xl bg-surface-subtle border border-border-subtle flex items-center justify-center mb-2">
+            <div className="w-10 h-10 mx-auto rounded-xl bg-surface border border-border flex items-center justify-center mb-2">
               <system.icon className={`w-5 h-5 ${system.color}`} />
             </div>
             <p className="text-xs font-medium">{system.name}</p>
@@ -127,13 +127,13 @@ export default function TwinPage() {
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="rounded-xl border border-border-subtle bg-surface-subtle p-5"
+          className="rounded-xl border border-border bg-surface p-5"
         >
           <h3 className="font-semibold mb-4">{systemDetails[selectedSystem]?.title}</h3>
           <div className="space-y-2">
             {systemDetails[selectedSystem]?.events.map((event, i) => (
-              <div key={i} className="flex items-start gap-3 p-2.5 rounded-lg bg-surface-subtle">
-                <Info className="w-4 h-4 text-accent mt-0.5 flex-shrink-0" />
+              <div key={i} className="flex items-start gap-3 p-2.5 rounded-lg bg-surface-inset">
+                <Info className="w-4 h-4 text-foreground mt-0.5 flex-shrink-0" />
                 <p className="text-sm text-muted">{event}</p>
               </div>
             ))}
@@ -146,10 +146,10 @@ export default function TwinPage() {
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
-        className="mt-6 rounded-xl border border-accent/20 bg-accent/5 p-5"
+        className="mt-6 rounded-xl border border-border bg-surface p-5"
       >
         <div className="flex items-start gap-3">
-          <AlertTriangle className="w-5 h-5 text-accent flex-shrink-0 mt-0.5" />
+          <AlertTriangle className="w-5 h-5 text-foreground flex-shrink-0 mt-0.5" />
           <div>
             <h3 className="font-semibold text-sm mb-1">Emergency Summary Ready</h3>
             <p className="text-sm text-muted">
