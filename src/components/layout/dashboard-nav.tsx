@@ -1,13 +1,15 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { removeToken, getStoredUser } from '@/lib/auth';
+import type { StoredUser } from '@/lib/auth';
 import { LogOut, ChevronLeft } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Logo, LogoIcon } from '@/components/ui/logo';
+import { LogoIcon } from '@/components/ui/logo';
 
 const navItems = [
-  { label: 'Dashboard', href: '/dashboard' },
+  { label: 'Dashboard', href: '/dashboard/dashboard' },
   { label: 'Identity', href: '/identity' },
   { label: 'Digital Twin', href: '/twin' },
   { label: 'Timeline', href: '/timeline' },
@@ -17,8 +19,11 @@ const navItems = [
 export function DashboardNav() {
   const router = useRouter();
   const pathname = usePathname();
+  const [user, setUser] = useState<StoredUser | null>(null);
 
-  const user = getStoredUser();
+  useEffect(() => {
+    setUser(getStoredUser());
+  }, []);
 
   const handleLogout = () => {
     removeToken();
@@ -31,7 +36,7 @@ export function DashboardNav() {
       <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-14 items-center justify-between gap-4">
           <div className="flex items-center gap-6">
-            <a href="/dashboard" className="flex items-center gap-2 shrink-0">
+            <a href="/dashboard/dashboard" className="flex items-center gap-2 shrink-0">
               <LogoIcon />
               <span className="text-sm font-semibold tracking-tight hidden sm:inline">LIFELINK</span>
             </a>
