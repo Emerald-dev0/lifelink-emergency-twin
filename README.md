@@ -209,11 +209,14 @@ ENCRYPTION_KEY=your_16_byte_hex
 
 ## PWA
 
-- ✅ `manifest.json` (standalone, theme_color, icons)
+- ✅ `manifest.json` (standalone, theme_color, icons, shortcuts)
 - ✅ Service worker (cache-first static, network-first API)
 - ✅ Maskable icons (192/512), `apple-touch-icon`, `favicon.svg`
 - ✅ `theme-color` meta (light/dark)
 - ✅ Offline fallback
+- ✅ **PWA Shortcuts:** Emergency Card (one-tap from home screen), Dashboard
+- ✅ **Emergency Card Page:** `/emergency-card/[LL-ID]` — high contrast, lock screen optimized, always-on display
+- ✅ **QR on Lock Screen:** Download QR → set as wallpaper → EMS scans without unlock
 
 ---
 
@@ -300,9 +303,28 @@ ENCRYPTION_KEY=your_16_byte_hex
 - [ ] Grant code entry → patient data loads in responder portal
 - [ ] HOLON summary shows drug interaction / risk flags
 - [ ] Emergency page shows blood type, allergies, medications, contacts with tap-to-call
+- [ ] Emergency card page (`/emergency-card/[id]`) — high contrast, lock screen optimized
+- [ ] PWA install prompt appears → "Add Emergency Card to Home Screen"
 - [ ] Access log appears on patient's **Access** page
 - [ ] Responder logout → portal locks
 - [ ] Patient can revoke grant from **Access** page
+
+### PWA Setup for Judges
+
+**Install the PWA on your phone:**
+1. Open `http://localhost:3000` in Chrome/Safari
+2. Tap "Add to Home Screen" (or use the install prompt on Identity page)
+3. LIFELINK now appears as a native app
+
+**Set up emergency card for lock screen:**
+1. Login → Identity page → tap "Open Emergency Card (Lock Screen View)"
+2. Screenshot the QR code → set as phone wallpaper
+3. Or: tap "Download QR" → print on card stock → keep in wallet
+
+**Test the unconscious patient flow:**
+1. Phone is locked, QR visible on lock screen
+2. Responder opens `/responder` → scans QR or types LL-ID
+3. Blood type, allergies, meds, contacts load instantly
 
 ---
 
