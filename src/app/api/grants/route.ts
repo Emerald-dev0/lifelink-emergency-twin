@@ -64,7 +64,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, error: 'No emergency identity found' }, { status: 404 });
     }
 
-    const grantCode = `GRANT-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    const seg = (len: number) => Array.from({ length: len }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
+    const grantCode = `GC-${seg(4)}-${seg(4)}`;
 
     const grant = await EmergencyGrant.create({
       emergencyId: identity._id,

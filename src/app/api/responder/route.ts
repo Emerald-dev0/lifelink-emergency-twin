@@ -46,11 +46,11 @@ export async function POST(request: NextRequest) {
       identifier: identity.identifier,
     };
 
-    if (grant.permissions.includes('blood_type')) responseData.bloodType = identity.bloodType;
-    if (grant.permissions.includes('allergies')) responseData.allergies = identity.allergies;
-    if (grant.permissions.includes('medications')) responseData.medications = identity.medications;
-    if (grant.permissions.includes('conditions')) responseData.conditions = identity.conditions;
-    if (grant.permissions.includes('emergency_contacts')) responseData.emergencyContacts = identity.emergencyContacts;
+    if (grant.permissions.includes('view_identity') || grant.permissions.includes('blood_type')) responseData.bloodType = identity.bloodType;
+    if (grant.permissions.includes('view_allergies') || grant.permissions.includes('allergies')) responseData.allergies = identity.allergies;
+    if (grant.permissions.includes('view_medications') || grant.permissions.includes('medications')) responseData.medications = identity.medications;
+    if (grant.permissions.includes('view_conditions') || grant.permissions.includes('conditions')) responseData.conditions = identity.conditions;
+    if (grant.permissions.includes('view_contacts') || grant.permissions.includes('emergency_contacts')) responseData.emergencyContacts = identity.emergencyContacts;
 
     return NextResponse.json({
       success: true,
