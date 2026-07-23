@@ -9,7 +9,7 @@ import { cn } from '@/lib/utils';
 import { LogoIcon } from '@/components/ui/logo';
 
 const navItems = [
-  { label: 'Dashboard', href: '/dashboard/dashboard' },
+  { label: 'Dashboard', href: '/dashboard' },
   { label: 'Identity', href: '/identity' },
   { label: 'Digital Twin', href: '/twin' },
   { label: 'Timeline', href: '/timeline' },

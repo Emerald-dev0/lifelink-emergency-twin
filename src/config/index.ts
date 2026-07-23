@@ -6,7 +6,7 @@ export const config = {
   },
   ontomorph: {
     apiKey: process.env.ONTOMORPH_API_KEY || '',
-    baseUrl: process.env.ONTOMORPH_BASE_URL || 'https://api.ontomorph.com/v1',
+    baseUrl: process.env.ONTOMORPH_BASE_URL || 'https://api.ontomorph.com',
     holonUrl: process.env.ONTOMORPH_BASE_URL
       ? `${process.env.ONTOMORPH_BASE_URL.replace(/\/v1.*$/, '')}/holon/v1`
       : 'https://holon-api.ontomorph.com',
