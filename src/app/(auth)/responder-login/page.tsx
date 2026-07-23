@@ -58,11 +58,14 @@ export default function ResponderLoginPage() {
         className="relative w-full max-w-sm"
       >
         <div className="mb-8">
-          <div className="inline-flex items-center justify-center w-10 h-10 rounded-md border border-border bg-surface mb-4">
-            <Ambulance className="w-5 h-5 text-foreground" />
+          <div className="inline-flex items-center justify-center w-12 h-12 rounded-lg border-2 border-red-500 bg-red-500/10 mb-4">
+            <Ambulance className="w-6 h-6 text-red-600" />
           </div>
-          <h1 className="text-2xl font-semibold tracking-tight">Responder sign in</h1>
-          <p className="text-sm text-muted mt-1">Access the emergency responder portal</p>
+          <div className="inline-block px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-widest bg-red-500/10 text-red-600 border border-red-500/20 mb-3">
+            Emergency Personnel Only
+          </div>
+          <h1 className="text-2xl font-semibold tracking-tight">Responder Sign In</h1>
+          <p className="text-sm text-muted mt-1">For EMTs, paramedics, nurses, and first responders</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -129,15 +132,15 @@ export default function ResponderLoginPage() {
         </form>
 
         <p className="text-center text-sm text-muted mt-6">
-          Not registered as a responder?{' '}
-          <a href="/responder-register" className="text-foreground underline underline-offset-2 hover:opacity-80">
-            Create account
+          Not a responder?{' '}
+          <a href="/login" className="text-foreground underline underline-offset-2 hover:opacity-80">
+            Patient sign in
           </a>
         </p>
 
         <div className="mt-8 space-y-3">
-          <a href="/login" className="block text-center text-xs text-muted hover:text-foreground transition-colors duration-200">
-            Patient sign in →
+          <a href="/responder-register" className="block text-center text-xs text-red-600 hover:text-red-700 font-medium transition-colors duration-200">
+            Register as a responder →
           </a>
           <a href="/" className="block text-center text-xs text-muted hover:text-foreground transition-colors duration-200">
             ← Back to home
