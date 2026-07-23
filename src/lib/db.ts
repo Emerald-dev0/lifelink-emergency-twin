@@ -1,11 +1,15 @@
 import mongoose from 'mongoose';
 import { config } from '@/config';
+import dns from 'dns';
 
 const MONGODB_URI = config.mongodb.uri;
 
 if (!MONGODB_URI) {
   throw new Error('Please define MONGODB_URI or DATABASE_URL environment variable');
 }
+
+// Fix Windows DNS resolution for MongoDB SRV records
+dns.setDefaultResultOrder('ipv4first');
 
 interface MongooseCache {
   conn: typeof mongoose | null;
@@ -31,6 +35,8 @@ export async function connectDB(): Promise<typeof mongoose> {
   if (!cached.promise) {
     cached.promise = mongoose.connect(MONGODB_URI, {
       bufferCommands: false,
+      serverSelectionTimeoutMS: 10000,
+      connectTimeoutMS: 10000,
     });
   }
 
