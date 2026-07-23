@@ -14,6 +14,12 @@ Every minute they spend guessing is a minute they can't treat her correctly. If 
 
 **This happens every day.** In the U.S. alone, **over 50% of emergency patients arrive unable to communicate** their critical health information. The result: preventable adverse drug events, delayed treatment, and avoidable deaths.
 
+### The Core Edge Case: The Patient Is Unconscious
+
+The critical flaw in most health ID systems: **they assume the patient can open their phone and share their data.** In a real emergency, the patient is unconscious, confused, or in shock. The responder needs access **without the patient's active participation.**
+
+LIFELINK solves this with **three independent access paths** — none requiring the patient to be conscious or cooperative.
+
 ---
 
 ## The Solution — LIFELINK
@@ -30,11 +36,15 @@ LIFELINK gives every patient a **secure, patient-owned emergency identity** back
 - Patient controls **exactly what responders see** — blood type and allergies? Yes. Psychiatric history? No.
 - Grants are **time-limited, scoped, and revocable** — patient owns the consent.
 
-**3. The Emergency (scan & go)**
-- Paramedic arrives, scans QR code on phone/lock screen/wallet card.
-- If patient pre-approved: instant access to scoped data.
-- If not: paramedic enters grant code → patient gets push notification → approves in seconds.
-- **HOLON clinical knowledge API** enriches raw data with context: drug interactions, reference ranges, risk flags.
+**3. The Emergency (three access paths — patient may be unconscious)**
+
+| Path | How It Works | When to Use |
+|------|--------------|-------------|
+| **Search (name or LL-ID)** | Responder enters patient name or LL-ID in portal → instant lookup | Patient unconscious, responder can identify them (ID, bracelet, phone screen) |
+| **QR Scan (lock screen)** | QR code on phone lock screen / wallet card / medical bracelet → scans to public `/emergency/[LL-ID]` page, no unlock needed | Phone visible, QR accessible without unlock |
+| **Grant Code (pre-authorized)** | Responder enters 8-char code → patient gets push notification → approves | Patient conscious, can cooperate |
+
+All access is logged, auditable, and time-stamped. Every path retrieves: blood type, allergies, medications, conditions, emergency contacts — enriched by **HOLON clinical knowledge API** (drug interactions, reference ranges, risk flags).
 
 **4. Responder Portal**
 - Clean, clinical summary: active medications, allergies, conditions, recent labs, risk flags.
@@ -137,12 +147,15 @@ src/
 ### Install & Run
 
 ```bash
-git clone https://github.com/<your-org>/lifelink-emergency-twin.git
+git clone https://github.com/Emerald-dev0/lifelink-emergency-twin.git
 cd lifelink-emergency-twin
 npm install
 
 # Copy .env.example → .env.local and fill in keys
 cp .env.example .env.local
+
+# Seed test accounts + sample data (required for demo)
+npm run seed
 
 npm run dev          # http://localhost:3000
 npm run build        # production build
@@ -175,7 +188,9 @@ ENCRYPTION_KEY=your_16_byte_hex
 | `GET/POST` | `/api/events` | Bearer | Health event timeline |
 | `GET/POST` | `/api/grants` | Bearer | Grant create/list |
 | `GET` | `/api/grants/[code]` | — | Public grant validation |
+| `GET` | `/api/emergency/[id]` | — | **Public emergency identity** (QR-encoded, no auth) |
 | `POST` | `/api/responder` | — | Responder grant-code lookup |
+| `GET` | `/api/responder/search?q=` | — | **Responder patient search** (by name or LL-ID) |
 | `POST/GET` | `/api/ontomorph/twin` | Bearer | Create/fetch Ontomorph twin |
 | `GET` | `/api/health` | — | MongoDB + Ontomorph status |
 
@@ -223,6 +238,74 @@ ENCRYPTION_KEY=your_16_byte_hex
 
 ---
 
+## For Judges / Testing
+
+### Test Accounts (pre-seeded)
+
+| Role | Email | Password | Notes |
+|------|-------|----------|-------|
+| **Patient** | `patient@lifelink.demo` | `Patient123!` | Sarah Johnson — blood type O+, connected Digital Twin, emergency identity with QR code, 6 health events, 3 emergency contacts, 3 medications, 3 allergies, 1 active grant |
+| **Responder** | `responder@lifelink.demo` | `Responder123!` | Dr. James Carter — responder portal with grant-code lookup access |
+
+> **Run locally:** `npm run seed` → `npm run dev` → open `http://localhost:3000`
+
+### How to Demo the Full Flow
+
+**You'll need two devices (or two browser windows in incognito):**
+
+#### Scenario A — Patient Is Unconscious (Primary Flow)
+
+**Device A — Responder (EMS)**
+1. Go to `/responder` → choose **Search** tab
+2. Type `Sarah Johnson` → click **Search Patient**
+3. Portal instantly shows: blood type O+, allergies (Penicillin, Sulfa, Peanuts), medications, conditions, emergency contacts with tap-to-call
+4. HOLON summary shows drug interaction warnings and clinical risk flags
+
+#### Scenario B — QR Code on Phone Lock Screen
+
+**Device A — Patient (before emergency)**
+1. Login → Identity page → QR code links to `/emergency/LL-XXXX-XXXX`
+2. Screenshot QR, set as lock screen wallpaper, or print wallet card
+
+**Device B — Responder**
+1. Go to `/responder` → choose **Scan QR** tab
+2. Scan the QR (or enter the LL-ID from the QR)
+3. Public emergency page loads instantly — no unlock needed, no auth required
+
+#### Scenario C — Grant Code (Patient Conscious)
+
+**Device A — Patient**
+1. Login → Identity page → share grant code verbally or via message
+
+**Device B — Responder**
+1. Go to `/responder` → choose **Grant Code** tab
+2. Enter the code → patient data loads with HOLON enrichment
+
+### Three Access Paths for Responders
+
+| Path | How It Works | Patient Status |
+|------|--------------|----------------|
+| **Search (name / LL-ID)** | Responder types patient name or LL-ID → instant lookup via `/api/responder/search` | **Unconscious** — responder identifies patient from ID, phone, bracelet |
+| **QR Scan (lock screen)** | QR encodes `/emergency/[LL-ID]` → public page loads, no auth, no unlock | **Unconscious** — QR visible on phone lock screen, wallet card, or bracelet |
+| **Grant Code** | Responder enters code → validated via `/api/responder` → scoped data returned | **Conscious** — patient shares code verbally or via message |
+
+> **Key design decision:** The emergency page (`/emergency/[id]`) is **public and unauthenticated** — this is intentional. In a life-threatening emergency, barriers to data access cost lives. All access is logged with IP, timestamp, and user agent for audit.
+
+### Quick Verification Checklist
+
+- [ ] Patient login → Identity page shows QR + LL-ID + grant code
+- [ ] Responder search → type "Sarah Johnson" → patient found
+- [ ] Responder search → type LL-ID → patient found
+- [ ] QR scan / LL-ID entry → public emergency page loads (no auth)
+- [ ] Grant code entry → patient data loads in responder portal
+- [ ] HOLON summary shows drug interaction / risk flags
+- [ ] Emergency page shows blood type, allergies, medications, contacts with tap-to-call
+- [ ] Access log appears on patient's **Access** page
+- [ ] Responder logout → portal locks
+- [ ] Patient can revoke grant from **Access** page
+
+---
+
 ## License
 
 MIT — free for hackathon, commercial, or educational use.
@@ -231,4 +314,4 @@ MIT — free for hackathon, commercial, or educational use.
 
 ## Team
 
-Built by **[Your Team Name]**.
+Built by **Emerald**.
