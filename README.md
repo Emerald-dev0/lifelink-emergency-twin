@@ -247,7 +247,7 @@ ENCRYPTION_KEY=your_16_byte_hex
 
 | Role | Email | Password | Notes |
 |------|-------|----------|-------|
-| **Patient** | `patient@lifelink.demo` | `Patient123!` | Sarah Johnson — blood type O+, connected Digital Twin, emergency identity with QR code, 6 health events, 3 emergency contacts, 3 medications, 3 allergies, 1 active grant |
+| **Patient** | `patient@lifelink.demo` | `Patient123!` | Sarah Johnson — blood type O+, LL-ID `LL-6QS4-24W4`, connected Digital Twin, emergency identity with QR code, 6 health events, 3 emergency contacts, 3 medications, 3 allergies, 1 active grant |
 | **Responder** | `responder@lifelink.demo` | `Responder123!` | Dr. James Carter — responder portal with grant-code lookup access |
 
 > **Run locally:** `npm run seed` → `npm run dev` → open `http://localhost:3000`
@@ -264,16 +264,20 @@ ENCRYPTION_KEY=your_16_byte_hex
 3. Portal instantly shows: blood type O+, allergies (Penicillin, Sulfa, Peanuts), medications, conditions, emergency contacts with tap-to-call
 4. HOLON summary shows drug interaction warnings and clinical risk flags
 
+**Or search by LL-ID:** `LL-6QS4-24W4`
+
 #### Scenario B — QR Code on Phone Lock Screen
 
 **Device A — Patient (before emergency)**
-1. Login → Identity page → QR code links to `/emergency/LL-XXXX-XXXX`
+1. Login → Identity page → QR code links to `/emergency/LL-6QS4-24W4`
 2. Screenshot QR, set as lock screen wallpaper, or print wallet card
 
 **Device B — Responder**
 1. Go to `/responder` → choose **Scan QR** tab
-2. Scan the QR (or enter the LL-ID from the QR)
+2. Scan the QR (or enter `LL-6QS4-24W4` manually)
 3. Public emergency page loads instantly — no unlock needed, no auth required
+
+**Direct link:** `http://localhost:3000/emergency/LL-6QS4-24W4`
 
 #### Scenario C — Grant Code (Patient Conscious)
 
@@ -283,6 +287,8 @@ ENCRYPTION_KEY=your_16_byte_hex
 **Device B — Responder**
 1. Go to `/responder` → choose **Grant Code** tab
 2. Enter the code → patient data loads with HOLON enrichment
+
+**Pre-seeded grant code:** `GC-X59A-OVGA` (active, expires 24h)
 
 ### Three Access Paths for Responders
 
