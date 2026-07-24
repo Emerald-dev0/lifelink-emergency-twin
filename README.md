@@ -143,6 +143,201 @@ LIFELINK gives every patient a **secure, patient-owned emergency identity** back
 
 ---
 
+## How to Set Up Your Emergency Card
+
+### Step 1: Create Your Account
+
+1. Go to `http://localhost:3000` (or your Vercel URL)
+2. Click **Get Started** or **Create Account**
+3. Fill in your details → you'll be guided through onboarding
+4. Connect your **Ontomorph Digital Twin** (click "Connect Digital Twin" on the dashboard)
+
+### Step 2: Set Up Your Emergency Identity
+
+1. After onboarding, go to the **Identity** page (click "Identity" in the sidebar)
+2. You'll see:
+   - Your **LL-ID** (e.g., `LL-CW4P-KDFV`) — unique to you
+   - Your **QR Code** — encodes your emergency page URL
+   - Your **Grant Code** (e.g., `GC-U3PX-L3BQ`) — for conscious patient access
+3. Fill in your health info: blood type, allergies, medications, conditions, emergency contacts
+
+### Step 3: Download Your Emergency Cards
+
+On the **Identity** page, you'll see four download options:
+
+#### Option A: Wallet Card (Recommended)
+
+1. Click **"Download Wallet Card"**
+2. An SVG file downloads — credit-card sized (85.6mm × 53.98mm)
+3. **What's on it:**
+   - Your name and LL-ID
+   - Blood type (large, bold)
+   - Allergies (list)
+   - Medications (list)
+   - LIFELINK branding
+   - Your personal QR code
+4. **Print it:**
+   - Print on card stock or photo paper
+   - Cut along the edges
+   - Laminate if possible (optional but recommended)
+5. **Keep it:**
+   - In your wallet (like a credit card)
+   - In your purse or bag
+   - With your ID documents
+
+**Why this works:** Even if your phone is dead, broken, or locked, paramedics can find this card in your wallet and scan the QR code.
+
+#### Option B: Car Sticker
+
+1. Click **"Download Car Sticker"**
+2. An SVG file downloads — 4" × 3" (large format)
+3. **What's on it:**
+   - Large, high-contrast QR code
+   - "EMERGENCY MEDICAL INFO" header
+   - Your LL-ID
+   - LIFELINK branding
+4. **Print it:**
+   - Print on adhesive paper or vinyl
+   - Cut to size
+5. **Place it:**
+   - Inside your car (glove box, visor, or dashboard)
+   - On your car window (if local laws allow)
+   - Near your driver's license/registration
+
+**Why this works:** In a car accident, paramedics check the glove box and visor for medical info. A large QR code on a sticker means they can scan it without moving you.
+
+#### Option C: QR Code Only
+
+1. Click **"Download QR Code"**
+2. Just the QR code image downloads
+3. **Use it:**
+   - Set as your phone's lock screen wallpaper
+   - Print on a small card and attach to your medical bracelet
+   - Engrave the URL on a medical ID bracelet
+   - Share with family members
+
+**Why this works:** The QR code is the fastest way for paramedics to access your info. Phone lock screen = instant access without unlocking.
+
+#### Option D: Emergency Card Page
+
+1. Click **"Open Emergency Card (Lock Screen View)"**
+2. Opens `/emergency-card/[your-LL-ID]`
+3. This is a **high-contrast, always-on display** optimized for phone screens
+4. **Use it:**
+   - Screenshot it → set as lock screen wallpaper
+   - Leave it open on your phone during travel
+   - Show it to paramedics directly
+
+**Why this works:** Designed for lock screen viewing — large text, high contrast, no scrolling needed. Works even on low-brightness screens.
+
+### Step 4: Set Up Phone Lock Screen (Optional but Powerful)
+
+1. Open the **Emergency Card Page** on your phone
+2. Take a screenshot
+3. Set as your lock screen wallpaper
+4. Now when paramedics find your phone, they see your medical info without unlocking
+
+**Why this works:** Most people keep their phone on them at all times. A lock screen medical ID is always accessible.
+
+### Step 5: Share with Family
+
+1. Give your family members your **LL-ID** (e.g., `LL-CW4P-KDFV`)
+2. They can access your emergency info at any time: `http://localhost:3000/emergency/LL-CW4P-KDFV`
+3. They can also create their own LIFELINK accounts
+
+---
+
+## Contingencies & Edge Cases
+
+LIFELINK is designed for **real-world emergency scenarios** where things go wrong. Here's how we handle every edge case:
+
+### Contingency 1: Phone is Dead
+
+| Problem | Solution |
+|---------|----------|
+| Patient's phone is dead | **Wallet card** in their purse/wallet → paramedic scans QR → emergency page loads on paramedic's phone |
+| No wallet card | Paramedic searches by **name** or **LL-ID** (from medical bracelet, ID, or asking bystanders) |
+| No ID at all | **Public emergency page** can be accessed if anyone knows the patient's name |
+
+### Contingency 2: Phone is Locked
+
+| Problem | Solution |
+|---------|----------|
+| Patient's phone is locked | **QR code on lock screen wallpaper** → paramedic scans with their phone → emergency page loads (no unlock needed) |
+| No QR on lock screen | Paramedic searches by **name** or **LL-ID** in the responder portal |
+
+### Contingency 3: Patient is Unconscious
+
+| Problem | Solution |
+|---------|----------|
+| Patient can't communicate | **3 access paths work without patient cooperation:** Search (name/LL-ID), QR scan, or grant code (if someone else has it) |
+| No one knows the patient's name | Paramedic checks wallet for **wallet card** → scans QR → instant access |
+| In a car accident | **Car sticker** in glove box → paramedic scans → emergency page loads |
+
+### Contingency 4: No Internet
+
+| Problem | Solution |
+|---------|----------|
+| Paramedic has no signal | **PWA service worker** caches the emergency page → loads from cache if previously visited |
+| First-time access, no cache | Paramedic can call the **grant code** line (future: SMS fallback) |
+| Dead zone (rural area) | **Wallet card** has the LL-ID printed → paramedic can note it and access later when signal returns |
+
+### Contingency 5: Allergic Reaction Emergency
+
+| Problem | Solution |
+|---------|----------|
+| Paramedic needs to know allergies fast | **Emergency page** shows allergies in large, bold text at the top |
+| Drug interaction risk | **HOLON enrichment** flags drug interactions in the responder view |
+| Unknown medication | **Medication list** shows all current meds with dosages |
+
+### Contingency 6: Multiple Patients
+
+| Problem | Solution |
+|---------|----------|
+| Mass casualty incident | Each patient has a **unique LL-ID** → paramedic searches by LL-ID for each patient |
+| Mixed up patients | **QR codes** are unique per patient → scanning the right QR gets the right data |
+| Unidentified patient | **Name search** in responder portal → if patient is in the system, they're found |
+
+### Contingency 7: Consent & Privacy
+
+| Problem | Solution |
+|---------|----------|
+| Patient wants to control what's shared | **Granular permissions** → patient chooses exactly which data categories responders see |
+| Grant was shared but patient changed their mind | **Revoke grant** from the Access page → immediate effect |
+| Grant expired | **Time-limited grants** (default 24h) → automatically expire → no permanent access |
+| Audit trail needed | **Access logging** → every access logged with IP, timestamp, user agent, fields accessed |
+
+### Contingency 8: Technical Failures
+
+| Problem | Solution |
+|---------|----------|
+| MongoDB is down | Health check endpoint shows `down` status → alerts admin |
+| Ontomorph API is down | Fallback to local MongoDB data → emergency page still works |
+| Vercel is down | **PWA service worker** serves cached emergency page |
+| All systems down | **Physical wallet card** and **car sticker** still work (QR code + printed info) |
+
+### Contingency 9: Different Devices
+
+| Problem | Solution |
+|---------|----------|
+| Paramedic uses Android | **PWA** works on any device with a browser |
+| Paramedic uses iPhone | Same — PWA works on iOS Safari |
+| Paramedic uses old phone | **SVG QR codes** scale to any screen size |
+| Patient uses tablet | **Responsive design** works on all screen sizes |
+
+### Contingency 10: Real-World Scenarios
+
+| Scenario | How LIFELINK Helps |
+|----------|-------------------|
+| **Car accident** | Car sticker in glove box → paramedic scans → blood type, allergies, meds load instantly |
+| **Heart attack at home** | Family member opens LIFELINK app → shares emergency page with paramedics |
+| **Allergic reaction at restaurant** | Friend searches by name in responder portal → allergy list shows → paramedic avoids penicillin |
+| **Unconscious on the street** | Paramedic finds wallet → wallet card → scans QR → emergency page loads on their phone |
+| **Traveling alone** | QR on lock screen → anyone who finds you can scan → paramedics get your data |
+| **Mass casualty event** | Each patient has unique LL-ID → paramedics triage by scanning QR codes |
+
+---
+
 ## Architecture
 
 ```
@@ -283,9 +478,10 @@ ENCRYPTION_KEY=your_16_byte_hex
 #### A. Unconscious Patient (Primary Flow)
 
 **Responder window:**
-1. Go to `/responder` → **Search** tab
-2. Type `Sarah Johnson` → patient found instantly
-3. See: blood type O+, allergies (Penicillin, Sulfa, Peanuts), medications, conditions, contacts with tap-to-call
+1. Go to `/responder-login` → login as responder
+2. Go to `/responder` → **Search** tab
+3. Type `Sarah Johnson` → patient found instantly
+4. See: blood type O+, allergies (Penicillin, Sulfa, Peanuts), medications, conditions, contacts with tap-to-call
 
 **Or search by LL-ID:** `LL-CW4P-KDFV`
 
@@ -323,16 +519,37 @@ ENCRYPTION_KEY=your_16_byte_hex
 ### Verification Checklist
 
 - [ ] Patient login → Identity page shows QR + LL-ID + grant code
+- [ ] Responder login → portal loads with 3 tabs (Search, QR, Grant Code)
 - [ ] Responder search → "Sarah Johnson" → patient found
 - [ ] Responder search → LL-ID → patient found
 - [ ] QR / LL-ID → public emergency page loads (no auth)
 - [ ] Grant code → patient data loads in responder portal
 - [ ] Emergency page shows blood type, allergies, meds, contacts with tap-to-call
 - [ ] Emergency card page (`/emergency-card/[id]`) — high contrast, lock screen
+- [ ] Wallet card download → SVG file
+- [ ] Car sticker download → SVG file
+- [ ] QR code download → image file
 - [ ] PWA install prompt appears
-- [ ] Wallet card / car sticker / QR downloads work
 - [ ] Access log appears on patient's Access page
 - [ ] Responder logout → portal locks
+
+### PWA Setup for Judges
+
+**Install the PWA on your phone:**
+1. Open `http://localhost:3000` in Chrome/Safari
+2. Tap "Add to Home Screen" (or use the install prompt on Identity page)
+3. LIFELINK now appears as a native app
+
+**Set up emergency card for lock screen:**
+1. Login → Identity page → tap "Open Emergency Card (Lock Screen View)"
+2. Screenshot the QR code → set as phone wallpaper
+3. Or: tap "Download QR" → print on card stock → keep in wallet
+
+**Print physical emergency cards:**
+1. Login → Identity page → tap "Wallet Card" → download SVG → print → cut → keep in wallet
+2. Or: tap "Car Sticker" → download → print → place in car window / glove box
+3. Each QR code is **unique per patient** — encodes their personal emergency URL
+4. Card shows: blood type, allergies, medications, LIFELINK branding, QR code
 
 ---
 
