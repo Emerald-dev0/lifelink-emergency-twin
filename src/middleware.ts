@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 const protectedRoutes = ['/dashboard', '/twin', '/identity', '/access', '/timeline', '/responder'];
-const authRoutes = ['/login', '/responder-login', '/onboarding', '/responder-register'];
+const authRoutes = ['/login', '/onboarding'];
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
