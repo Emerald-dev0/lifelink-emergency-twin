@@ -27,8 +27,8 @@ export function DashboardNav() {
 
   const handleLogout = () => {
     removeToken();
-    document.cookie = 'lifelink_token=; path=/; max-age=0';
-    router.push('/');
+    document.cookie = 'lifelink_token=; path=/; max-age=0; SameSite=Lax';
+    router.push('/login');
   };
 
   return (
@@ -36,7 +36,7 @@ export function DashboardNav() {
       <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-14 items-center justify-between gap-4">
           <div className="flex items-center gap-6">
-            <a href="/dashboard/dashboard" className="flex items-center gap-2 shrink-0">
+            <a href="/dashboard" className="flex items-center gap-2 shrink-0">
               <LogoIcon />
               <span className="text-sm font-semibold tracking-tight hidden sm:inline">LIFELINK</span>
             </a>
