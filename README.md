@@ -10,7 +10,7 @@
 
 No wallet. No medical ID bracelet. Phone is locked. The paramedics have **zero information** — not her name, not her blood type, not that she's on warfarin, not that she has a severe penicillin allergy.
 
-**This happens every day.** In the U.S., **over 50% of emergency patients arrive unable to communicate** their critical health information. Every minute they spend guessing is a minute they can't treat her correctly.
+**This happens every day.** Globally, **over 50% of emergency patients arrive unable to communicate** their critical health information. Every minute they spend guessing is a minute they can't treat her correctly.
 
 ### The Core Edge Case: The Patient Is Unconscious
 

@@ -25,6 +25,8 @@ export default function ResponderPage() {
   const [patientInfo, setPatientInfo] = useState<PatientData | null>(null);
   const [summary, setSummary] = useState<any>(null);
   const [errorMsg, setErrorMsg] = useState('');
+  const [fontSize, setFontSize] = useState<'normal' | 'large' | 'xl'>('normal');
+  const [highContrast, setHighContrast] = useState(false);
   const scannerRef = useRef<any>(null);
   const scannerContainerRef = useRef<HTMLDivElement>(null);
 
@@ -253,8 +255,8 @@ export default function ResponderPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
-      <div className="relative z-10 flex-1 flex flex-col max-w-lg mx-auto w-full px-4 py-8">
+    <div className={`min-h-screen bg-background flex flex-col ${highContrast ? 'bg-black text-white' : ''}`}>
+      <div className={`relative z-10 flex-1 flex flex-col max-w-lg mx-auto w-full px-4 py-8 ${fontSize === 'large' ? 'text-lg' : fontSize === 'xl' ? 'text-xl' : ''}`}>
         {/* Header */}
         <div className="text-center mb-6">
           <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-foreground/5 border border-border mb-4">
@@ -263,8 +265,19 @@ export default function ResponderPage() {
           <div className="inline-block px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-widest bg-foreground/5 border border-border mb-3">
             Emergency Personnel Only
           </div>
-          <h1 className="text-2xl font-bold">Responder Portal</h1>
+          <h1 className={`font-bold ${fontSize === 'xl' ? 'text-3xl' : 'text-2xl'}`}>Responder Portal</h1>
           <p className="text-sm text-muted mt-1">For EMTs, paramedics, nurses, and first responders</p>
+          {/* Display Controls */}
+          <div className="flex items-center justify-center gap-2 mt-3">
+            <button onClick={() => setHighContrast(!highContrast)} className={`px-2 py-1 rounded text-[10px] font-medium border transition-all ${highContrast ? 'bg-white text-black border-white' : 'bg-foreground text-background border-foreground'}`}>
+              {highContrast ? 'Normal' : 'High Contrast'}
+            </button>
+            {['normal', 'large', 'xl'].map(s => (
+              <button key={s} onClick={() => setFontSize(s as any)} className={`px-2 py-1 rounded text-[10px] font-medium border transition-all ${fontSize === s ? 'bg-foreground text-background border-foreground' : 'border-border text-muted hover:text-foreground'}`}>
+                {s === 'normal' ? 'A' : s === 'large' ? 'A+' : 'A++'}
+              </button>
+            ))}
+          </div>
         </div>
 
         <AnimatePresence mode="wait">
@@ -454,11 +467,39 @@ export default function ResponderPage() {
                 </div>
               </div>
 
+              {/* Quick Info Banner */}
+              <div className={`rounded-xl border p-4 flex items-center justify-around text-center ${highContrast ? 'border-gray-600 bg-gray-900' : 'border-foreground/10 bg-foreground/5'}`}>
+                {patientInfo.bloodType && (
+                  <div>
+                    <p className="text-[10px] text-muted uppercase tracking-wider">Blood</p>
+                    <p className={`font-black ${highContrast ? 'text-red-400' : 'text-red-600'}`}>{patientInfo.bloodType}</p>
+                  </div>
+                )}
+                {patientInfo.allergies.length > 0 && (
+                  <div>
+                    <p className="text-[10px] text-muted uppercase tracking-wider">Allergies</p>
+                    <p className="font-bold text-amber-600">{patientInfo.allergies.length}</p>
+                  </div>
+                )}
+                {patientInfo.medications.length > 0 && (
+                  <div>
+                    <p className="text-[10px] text-muted uppercase tracking-wider">Meds</p>
+                    <p className="font-bold">{patientInfo.medications.length}</p>
+                  </div>
+                )}
+                {patientInfo.emergencyContacts.length > 0 && (
+                  <div>
+                    <p className="text-[10px] text-muted uppercase tracking-wider">Contacts</p>
+                    <p className="font-bold">{patientInfo.emergencyContacts.length}</p>
+                  </div>
+                )}
+              </div>
+
               {/* Blood Type */}
-              <div className="rounded-xl border-2 border-red-200 bg-red-50 p-4 text-center">
-                <Droplets className="w-6 h-6 text-red-600 mx-auto mb-1" />
-                <p className="text-xs text-muted uppercase tracking-wider">Blood Type</p>
-                <p className="text-3xl font-black text-red-600">{patientInfo.bloodType}</p>
+              <div className={`rounded-xl border-2 ${highContrast ? 'border-white bg-red-900' : 'border-red-200 bg-red-50'} p-4 text-center`}>
+                <Droplets className={`w-6 h-6 mx-auto mb-1 ${highContrast ? 'text-white' : 'text-red-600'}`} />
+                <p className={`text-xs uppercase tracking-wider ${highContrast ? 'text-gray-300' : 'text-muted'}`}>Blood Type</p>
+                <p className={`font-black ${fontSize === 'xl' ? 'text-6xl' : 'text-5xl'} ${highContrast ? 'text-white' : 'text-red-600'}`}>{patientInfo.bloodType}</p>
               </div>
 
               {/* Allergies */}
