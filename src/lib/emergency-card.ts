@@ -167,8 +167,12 @@ export function downloadSvg(svgString: string, filename: string) {
  * Trigger browser print dialog with an SVG (for wallet card / sticker).
  */
 export function printSvg(svgString: string) {
-  const printWindow = window.open('', '_blank');
-  if (!printWindow) return;
+  const printWindow = window.open('', '_blank', 'width=400,height=300');
+  if (!printWindow) {
+    // Popup blocked — fallback to download
+    downloadSvg(svgString, 'lifelink-emergency-card.svg');
+    return;
+  }
   printWindow.document.write(`
     <!DOCTYPE html>
     <html>

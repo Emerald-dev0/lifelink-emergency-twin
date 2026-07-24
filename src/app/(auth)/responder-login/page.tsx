@@ -50,7 +50,7 @@ export default function ResponderLoginPage() {
   };
 
   return (
-    <div className="landing-theme min-h-screen flex items-center justify-center p-4 bg-background">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-background">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}

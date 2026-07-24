@@ -1,8 +1,7 @@
 @import "tailwindcss";
 
-/* ── Landing theme (default): white-first, strict black & white ── */
-:root,
-.landing-theme {
+/* ── All pages: black & white theme ── */
+:root {
   --background: #ffffff;
   --foreground: #0a0a0a;
   --muted: #5a5a5a;
@@ -17,30 +16,9 @@
   --card-hover: #f0f0f0;
   --accent: #0a0a0a;
   --accent-dim: rgba(10, 10, 10, 0.06);
-  --danger: #0a0a0a;
-  --success: #0a0a0a;
-  --warning: #5a5a5a;
-}
-
-/* ── App theme: dark instrumentation with state accents (onboarding+) ── */
-.app-theme {
-  --background: #050505;
-  --foreground: #f5f5f5;
-  --muted: rgba(245, 245, 245, 0.55);
-  --muted-foreground: rgba(245, 245, 245, 0.35);
-  --border: rgba(255, 255, 255, 0.08);
-  --surface: #0f0f0f;
-  --surface-inset: #161616;
-  --surface-subtle: rgba(255, 255, 255, 0.03);
-  --border-subtle: rgba(255, 255, 255, 0.06);
-  --card-bg: rgba(255, 255, 255, 0.03);
-  --card-border: rgba(255, 255, 255, 0.06);
-  --card-hover: rgba(255, 255, 255, 0.06);
-  --accent: #00e5ff;
-  --accent-dim: rgba(0, 229, 255, 0.15);
-  --danger: #ff3333;
-  --success: #00ff85;
-  --warning: #ffb800;
+  --danger: #dc2626;
+  --success: #16a34a;
+  --warning: #d97706;
 }
 
 @theme inline {
@@ -73,17 +51,9 @@
 }
 
 *:focus-visible {
-  outline: 2px solid var(--accent);
+  outline: 2px solid var(--foreground);
   outline-offset: 2px;
   border-radius: 4px;
-}
-
-.app-theme *:focus-visible {
-  outline-color: var(--accent);
-}
-
-.landing-theme *:focus-visible {
-  outline-color: var(--foreground);
 }
 
 html {
@@ -100,15 +70,9 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Landing: black selection on white */
-.landing-theme ::selection {
+/* Black selection on white */
+::selection {
   background: var(--foreground);
-  color: var(--background);
-}
-
-/* App: cyan selection */
-.app-theme ::selection {
-  background: var(--accent);
   color: var(--background);
 }
 
@@ -120,22 +84,13 @@ body {
   background: transparent;
 }
 
-.landing-theme ::-webkit-scrollbar-thumb {
+::-webkit-scrollbar-thumb {
   background: rgba(0, 0, 0, 0.12);
   border-radius: 3px;
 }
 
-.landing-theme ::-webkit-scrollbar-thumb:hover {
+::-webkit-scrollbar-thumb:hover {
   background: rgba(0, 0, 0, 0.2);
-}
-
-.app-theme ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 3px;
-}
-
-.app-theme ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.2);
 }
 
 .font-mono {

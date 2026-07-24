@@ -73,7 +73,7 @@ export default function RootLayout({
       lang="en"
       className={`${inter.variable} ${jetbrainsMono.variable} h-full`}
     >
-      <body className="landing-theme min-h-full bg-background text-foreground font-sans antialiased">
+      <body className="min-h-full bg-background text-foreground font-sans antialiased">
         {children}
         <PWARegister />
       </body>

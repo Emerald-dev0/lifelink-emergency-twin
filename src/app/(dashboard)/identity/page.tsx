@@ -93,14 +93,27 @@ export default function IdentityPage() {
   };
 
   const handleShare = async () => {
-    if (!navigator.share) return;
-    try {
-      await navigator.share({
-        title: 'LIFELINK Emergency Identity',
-        text: `Emergency Identity: ${identity?.identifier || 'Unknown'}`,
-        url: window.location.href,
-      });
-    } catch { /* cancelled */ }
+    const url = `${window.location.origin}/emergency/${identity?.identifier}`;
+    const text = `LIFELINK Emergency Identity: ${identity?.identifier}\nBlood Type: ${identity?.bloodType}\nEmergency URL: ${url}`;
+    
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'LIFELINK Emergency Identity',
+          text,
+          url,
+        });
+      } catch { /* cancelled */ }
+    } else {
+      // Fallback: copy to clipboard
+      try {
+        await navigator.clipboard.writeText(url);
+        alert('Emergency link copied to clipboard!');
+      } catch {
+        // Final fallback: show the URL
+        prompt('Copy this emergency link:', url);
+      }
+    }
   };
 
   const emergencyUrl = typeof window !== 'undefined'

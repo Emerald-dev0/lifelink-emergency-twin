@@ -2,7 +2,7 @@
   "name": "LIFELINK — Emergency Health Identity",
   "short_name": "LIFELINK",
   "description": "When you cannot speak for yourself, your Digital Twin speaks.",
-  "start_url": "/",
+  "start_url": "/login",
   "display": "standalone",
   "background_color": "#050505",
   "theme_color": "#00E5FF",
