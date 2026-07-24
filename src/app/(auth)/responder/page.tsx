@@ -2,8 +2,10 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, Scan, KeyRound, Shield, HeartPulse, Check, AlertTriangle, X, Stethoscope, Phone, Droplets, Pill, Loader2, Camera, Keyboard } from 'lucide-react';
+import { Search, Scan, KeyRound, Shield, HeartPulse, Check, AlertTriangle, X, Stethoscope, Phone, Droplets, Pill, Loader2, Camera, Keyboard, LogOut } from 'lucide-react';
 import { getHolonSummary } from '@/lib/ontomorph';
+import { removeToken } from '@/lib/auth';
+import { useRouter } from 'next/navigation';
 
 type AccessMethod = 'search' | 'qr' | 'code';
 
@@ -17,6 +19,7 @@ interface PatientData {
 }
 
 export default function ResponderPage() {
+  const router = useRouter();
   const [method, setMethod] = useState<AccessMethod>('search');
   const [searchQuery, setSearchQuery] = useState('');
   const [grantCode, setGrantCode] = useState('');
@@ -212,6 +215,17 @@ export default function ResponderPage() {
     setPhase('idle');
   };
 
+  const handleLogout = () => {
+    if (scannerRef.current) {
+      try { scannerRef.current.stop(); } catch {}
+      try { scannerRef.current.clear(); } catch {}
+      scannerRef.current = null;
+    }
+    removeToken();
+    document.cookie = 'lifelink_token=; path=/; max-age=0; SameSite=Lax';
+    router.push('/login');
+  };
+
   const loadPatient = async (pData: PatientData) => {
     setPatientInfo(pData);
 
@@ -277,6 +291,9 @@ export default function ResponderPage() {
                 {s === 'normal' ? 'A' : s === 'large' ? 'A+' : 'A++'}
               </button>
             ))}
+            <button onClick={handleLogout} className="px-2 py-1 rounded text-[10px] font-medium border border-red-300 text-red-600 hover:bg-red-50 transition-all flex items-center gap-1">
+              <LogOut className="w-3 h-3" /> Sign Out
+            </button>
           </div>
         </div>
 
